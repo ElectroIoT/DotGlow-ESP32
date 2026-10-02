@@ -224,3 +224,9 @@ No app? The clock opens a WiFi hotspot **DotGlow-XXXX**; join it and the setup p
 ## License
 
 MIT, see [LICENSE](LICENSE). Made with care in India by [Manoranjan](https://manoranjan.dev) · [ElectroIoT](https://electroiot.in).
+
+### Name and logo
+
+The code is MIT licensed, but the **DotGlow** name, logo and app icon are not covered by the licence.
+Forks and rebuilt apps are welcome; please publish them under your own name, icon and package
+(not `com.electroiot.dotglow`), so users can tell them apart from the official app.
