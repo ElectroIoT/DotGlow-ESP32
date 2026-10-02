@@ -12,6 +12,7 @@
 #include <time.h>
 
 #include "app.h"
+#include "ble.h"
 #include "config.h"
 #include "display.h"
 #include "ota.h"
@@ -152,6 +153,7 @@ static void runOta() {
 
 static void service() {
     webLoop();
+    bleLoop();
     if (restartAt && (int32_t)(millis() - restartAt) >= 0) restart();
 }
 
@@ -439,6 +441,7 @@ void setup() {
     WiFi.setHostname(HOSTNAME);
     WiFi.mode(WIFI_STA);   // starts the network stack: the web server can't be created before it
     webBegin();
+    bleBegin(apName);      // the app can connect in every mode: clock, WiFi setup and safe mode
 
     if (safe) {
         startSafeMode();
@@ -477,6 +480,11 @@ void loop() {
     service();
     readLight();
     if (handleButton()) return;   // button hint on screen
+    uint32_t pk;
+    if (blePasskey(pk)) {         // a phone is pairing: show its PIN
+        drawPasskey(pk);
+        return;
+    }
     if      (appMode == MODE_SETUP) setupLoop();
     else if (appMode == MODE_SAFE)  safeLoop();
     else                            clockLoop();

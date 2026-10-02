@@ -390,6 +390,21 @@ static void drawTiny(int x, int y, uint8_t d) {
     }
 }
 
+void drawPasskey(uint32_t pk) {
+    char s[7];
+    snprintf(s, sizeof(s), "%06u", (unsigned)(pk % 1000000));
+    fbClear();
+    if (W >= 38) {   // room for the big 5x7 digits: 6 x 6 px
+        int x = (W - 35) / 2;
+        for (int i = 0; i < 6; i++) drawDigit(x + i * 6, s[i] - '0');
+    } else {         // 32 px: small 3x5 digits, 6 x 4 px, with a frame
+        int x = (W - 23) / 2;
+        for (int i = 0; i < 6; i++) drawTiny(x + i * 4, 1, s[i] - '0');
+        for (int i = 0; i < W; i++) fbSet(i, 7, (millis() / 400) % 2 ? (i % 2) : !(i % 2));   // marching dots
+    }
+    fbShow();
+}
+
 void showModuleNumbers() {
     fbClear();
     for (int m = 0; m < W / 8; m++) {
