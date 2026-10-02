@@ -4,7 +4,7 @@
 #ifdef CRASH_TEST
 #define FW_VERSION      "0.0.1"               // safe-mode test build (env:crashtest): always older than any release
 #else
-#define FW_VERSION      "0.2.0"               // bump for every release (tools/release.py reads it from here)
+#define FW_VERSION      "0.3.0"               // bump for every release (tools/release.py reads it from here)
 #endif
 
 #include <MD_MAX72xx.h>
@@ -39,6 +39,14 @@
 #define PIN_BUTTON      0
 #define BUTTON_HOLD_MS  5000
 #define BUTTON_PASS_MS  10000
+
+// ---- Optional stopwatch button (push button from the pin to GND) ---------------------
+// Tap: start / pause (from the clock: open the stopwatch). Hold: reset, then back to the clock.
+#if CONFIG_IDF_TARGET_ESP32S3
+#define PIN_STOPWATCH   4
+#else
+#define PIN_STOPWATCH   13
+#endif
 
 // ---- Optional light sensor (LDR from 3V3 to the pin, 10k from the pin to GND) -------
 #if CONFIG_IDF_TARGET_ESP32S3

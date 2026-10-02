@@ -15,6 +15,7 @@ void serviceWait(uint32_t ms);
 void displayBegin();                    // after settingsLoad(): module count / type come from settings
 void showModuleNumbers();
 void drawPasskey(uint32_t pk);           // 6-digit Bluetooth pairing PIN, centred (one frame)               // numbers each 8x8 module, to check the chain order
+void drawStopwatch(uint32_t ms, bool running);   // stopwatch face (one frame)
 void drawProgress(uint8_t percent);      // update progress: percentage + bar (one frame)
 void displayIntensity(uint8_t level);   // 0..15
 void displayPower(bool on);

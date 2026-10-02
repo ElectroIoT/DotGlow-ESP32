@@ -2,6 +2,7 @@
 #include "app.h"
 #include "config.h"
 #include "ota.h"
+#include "stopwatch.h"
 #include "settings.h"
 #include <WiFi.h>
 #include <esp_random.h>
@@ -102,7 +103,8 @@ static ApiResult opStatus(bool trusted) {
                 ",\"otaMsg\":" + jsonStr(ota.message) + ",\"otaBusy\":" + (otaRequest ? "true" : "false") +
                 ",\"mode\":" + jsonStr(appMode == MODE_SETUP ? "setup" : appMode == MODE_SAFE ? "safe" : "clock") +
                 ",\"safe\":" + (appMode == MODE_SAFE ? "true" : "false") +
-                ",\"light\":" + String(lightPercent()) + ",\"brNow\":" + String(brightnessNow()) + "}");
+                ",\"light\":" + String(lightPercent()) + ",\"brNow\":" + String(brightnessNow()) +
+                ",\"sw\":" + stopwatchJson() + "}");
 }
 
 static ApiResult opConfig() {
@@ -307,6 +309,7 @@ ApiResult apiCall(const String& op, const ApiArgs& a, bool trusted) {
     if (op == "digits")      { digitDemo = true; return ok(); }
     if (op == "modules")     { moduleTest = true; return ok(); }
     if (op == "anim")        { animRequest = constrain(a.get("n").toInt(), 0, (int)ANIM_RANDOM); return ok(); }
+    if (op == "stopwatch")   return stopwatchCommand(a.get("a")) ? json(stopwatchJson()) : fail(400, "Unknown action");
     if (op == "sync")        { startNtp(); return ok(); }
     if (op == "ota/check")   { otaRequest = OTA_CHECK; return ok(); }
     if (op == "ota/install") { otaRequest = OTA_INSTALL; return ok(); }

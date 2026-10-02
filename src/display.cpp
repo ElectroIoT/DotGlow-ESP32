@@ -270,6 +270,39 @@ void ClockFace::draw(const struct tm& t, uint16_t ms, int dx) {
     }
 }
 
+// Stopwatch: MM:SS (HH:MM after an hour; HH:MM:SS on 6+ modules), tenths of a second
+// filling the bottom row. Paused with time on it: the digits blink.
+void drawStopwatch(uint32_t ms, bool running) {
+    fbClear();
+    const uint32_t s = ms / 1000;
+    const uint32_t h = min<uint32_t>(s / 3600, 99), m = s / 60 % 60, sec = s % 60;
+    const bool wide = W >= FACE_HMS_W + 2;
+    uint8_t d[6];
+    int slots = 4;
+    if (wide) {
+        uint8_t v[6] = {(uint8_t)(h / 10), (uint8_t)(h % 10), (uint8_t)(m / 10), (uint8_t)(m % 10), (uint8_t)(sec / 10), (uint8_t)(sec % 10)};
+        memcpy(d, v, 6);
+        slots = 6;
+    } else if (s < 3600) {
+        uint8_t v[4] = {(uint8_t)(m / 10), (uint8_t)(m % 10), (uint8_t)(sec / 10), (uint8_t)(sec % 10)};
+        memcpy(d, v, 4);
+    } else {
+        uint8_t v[4] = {(uint8_t)(h / 10), (uint8_t)(h % 10), (uint8_t)(m / 10), (uint8_t)(m % 10)};
+        memcpy(d, v, 4);
+    }
+    const int x0 = (W - (wide ? FACE_HMS_W : FACE_HM_W)) / 2;
+    const bool hide = !running && ms > 0 && millis() % 1000 >= 650;
+    if (!hide) {
+        for (int i = 0; i < slots; i++) drawDigit(x0 + DIGIT_X[i], d[i]);
+        for (int k = 0; k < (wide ? 2 : 1); k++)
+            for (int c = 0; c < 2; c++)
+                for (int y : {1, 2, 4, 5}) fbSet(x0 + COLON_X[k] + c, y, true);
+    }
+    int len = (wide || s < 3600) ? (ms % 1000) * W / 1000 : sec * W / 60;
+    for (int x = 0; x < len; x++) fbSet(x, 7, true);
+    fbShow();
+}
+
 // =================================================================================
 // Animations
 // =================================================================================

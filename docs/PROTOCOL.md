@@ -92,3 +92,13 @@ INFO also carries `"asset"` (the release file this clock runs, e.g. `firmware-es
 
 `ota/status` -> `{"active","written","size","error"}`; `ota/abort` cancels. A disconnect cancels too.
 While an image arrives the display shows the percentage and a progress bar.
+
+## Stopwatch (firmware 0.3.0+)
+
+`stopwatch` `{"a": "start" | "pause" | "toggle" | "reset" | "open" | "exit"}` -> `{"on","run","ms"}`.
+`status` carries the same object as `"sw"`. While `on`, the display shows the stopwatch (MM:SS, HH:MM
+after an hour, HH:MM:SS on 6+ modules; tenths fill the bottom row; paused = blinking digits).
+
+Optional button: push button from GPIO4 (ESP32-S3) / GPIO13 (ESP32) to GND, internal pull-up.
+Tap = start / pause (from the clock: open the stopwatch and start). Hold 1.2 s = reset; at 0 = back
+to the clock. Paused for 30 minutes = back to the clock.

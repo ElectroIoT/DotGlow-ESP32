@@ -13,6 +13,7 @@
 
 #include "app.h"
 #include "ble.h"
+#include "stopwatch.h"
 #include "config.h"
 #include "display.h"
 #include "ota.h"
@@ -428,6 +429,7 @@ void setup() {
     bool safe = safeModeCheck();
     Serial.printf("Firmware %u bytes, %u bytes free for updates\n", ESP.getSketchSize(), ESP.getFreeSketchSpace());
     pinMode(PIN_BUTTON, INPUT_PULLUP);
+    stopwatchBegin();
     randomSeed(esp_random());
 
     settingsLoad();   // first: module count, type and orientation are settings
@@ -490,6 +492,7 @@ void loop() {
         drawProgress(pct);
         return;
     }
+    if (stopwatchLoop()) return;  // the stopwatch is showing
     if      (appMode == MODE_SETUP) setupLoop();
     else if (appMode == MODE_SAFE)  safeLoop();
     else                            clockLoop();
