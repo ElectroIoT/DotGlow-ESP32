@@ -22,6 +22,9 @@ static NimBLEServer*         server = nullptr;
 static String                devName;
 static NimBLECharacteristic* txChar = nullptr;
 static uint16_t              connHandle = BLE_HS_CONN_HANDLE_NONE;
+static const uint32_t        UNSECURED_DROP_MS = 60000;   // a link must be encrypted (paired) by then
+static std::map<uint16_t, uint32_t> connectedAt;          // conn handle -> millis() (main loop reads it)
+static SemaphoreHandle_t     connLock;
 
 // Requests arrive in the BLE host task; they are run in the main loop, one at a time,
 // because some operations block (WiFi scan) or touch the display.
@@ -33,11 +36,13 @@ static volatile uint32_t shownPasskey = 0;
 static volatile uint32_t passkeyUntil = 0;
 
 // Firmware update over Bluetooth: "ota/begin", then the raw image written to OTA_UUID,
-// then "ota/end". The bytes go straight to flash in the BLE host task; the phone writes
-// with response, so it can never get ahead of the flash.
+// then "ota/end". The bytes go straight to flash in the BLE host task. Writes without
+// response are fine: while the host task is busy the link layer holds the phone back,
+// and "ota/end" checks the size and MD5 anyway.
 static volatile bool     otaActive  = false;
 static volatile uint32_t otaSize    = 0;
 static volatile uint32_t otaWritten = 0;
+static uint32_t          otaStartMs = 0;
 static String            otaError;   // set by the host task, read by the main loop (under lock)
 
 static void otaStop(const String& why) {
@@ -61,11 +66,17 @@ class ServerCallbacks : public NimBLEServerCallbacks {
     // a stale connection must never lock the app out. Responses go to the newest link.
     void onConnect(NimBLEServer* s, ble_gap_conn_desc* desc) override {
         connHandle = desc->conn_handle;
-        Serial.printf("BLE: phone connected (%u open)\n", s->getConnectedCount());
+        xSemaphoreTake(connLock, portMAX_DELAY);
+        connectedAt[desc->conn_handle] = millis();
+        xSemaphoreGive(connLock);
+        Serial.printf("BLE: phone connected (%u open, interval %.1f ms)\n", s->getConnectedCount(), desc->conn_itvl * 1.25f);
         if (s->getConnectedCount() < CONFIG_BT_NIMBLE_MAX_CONNECTIONS) NimBLEDevice::startAdvertising();
     }
 
     void onDisconnect(NimBLEServer* s, ble_gap_conn_desc* desc) override {
+        xSemaphoreTake(connLock, portMAX_DELAY);
+        connectedAt.erase(desc->conn_handle);
+        xSemaphoreGive(connLock);
         if (desc->conn_handle == connHandle) {
             connHandle = BLE_HS_CONN_HANDLE_NONE;
             passkeyUntil = 0;
@@ -189,6 +200,9 @@ static void handle(const String& line) {
             otaError = "";
             xSemaphoreGive(lock);
             otaActive = true;
+            otaStartMs = millis();
+            // ask for the shortest connection interval (7.5-15 ms): several times faster than the default
+            server->updateConnParams(connHandle, 6, 12, 0, 400);
             uint16_t mtu = server->getPeerMTU(connHandle);
             r.json = true;
             r.body = String("{\"chunk\":") + min(512, mtu > 3 ? mtu - 3 : 20) + "}";
@@ -216,7 +230,9 @@ static void handle(const String& line) {
                 r.code = 400; r.body = String("Invalid firmware: ") + Update.errorString();
             } else {
                 r.body = "OK";
-                Serial.println(F("BLE update: done, restarting"));
+                uint32_t ms = millis() - otaStartMs;
+                Serial.printf("BLE update: done in %u s (%u KB/s), restarting\n", (unsigned)(ms / 1000),
+                              (unsigned)(otaSize / (ms ? ms : 1)));
                 scheduleRestart(1500);
             }
         }
@@ -238,7 +254,28 @@ static void handle(const String& line) {
     send(String("{\"id\":") + id + ",\"code\":" + r.code + ",\"body\":" + (r.json ? r.body : jsonStr(r.body)) + "}");
 }
 
+// A phone can leave a link behind that never gets encrypted (an app killed mid-connect).
+// Such a link is useless and can block that phone from connecting again: drop it.
+static void dropStaleLinks() {
+    static uint32_t lastCheck = 0;
+    if (millis() - lastCheck < 2000) return;
+    lastCheck = millis();
+    std::vector<uint16_t> stale;
+    xSemaphoreTake(connLock, portMAX_DELAY);
+    for (auto& c : connectedAt) {
+        ble_gap_conn_desc d;
+        if (millis() - c.second < UNSECURED_DROP_MS) continue;
+        if (ble_gap_conn_find(c.first, &d) == 0 && !d.sec_state.encrypted) stale.push_back(c.first);
+    }
+    xSemaphoreGive(connLock);
+    for (uint16_t h : stale) {
+        Serial.println(F("BLE: dropping a link that never paired"));
+        server->disconnect(h);
+    }
+}
+
 void bleLoop() {
+    dropStaleLinks();
     while (true) {
         String next;
         xSemaphoreTake(lock, portMAX_DELAY);
@@ -272,6 +309,7 @@ void bleForgetPhones() {
 
 void bleBegin(const String& name) {
     lock = xSemaphoreCreateMutex();
+    connLock = xSemaphoreCreateMutex();
     devName = name;
     NimBLEDevice::init(name.c_str());
     NimBLEDevice::setPower(ESP_PWR_LVL_P9);
@@ -291,7 +329,7 @@ void bleBegin(const String& name) {
     rx->setCallbacks(new RxCallbacks());
 
     NimBLECharacteristic* otaChar = svc->createCharacteristic(
-        OTA_UUID, NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_ENC | NIMBLE_PROPERTY::WRITE_AUTHEN, 512);
+        OTA_UUID, NIMBLE_PROPERTY::WRITE | NIMBLE_PROPERTY::WRITE_NR | NIMBLE_PROPERTY::WRITE_ENC | NIMBLE_PROPERTY::WRITE_AUTHEN, 512);
     otaChar->setCallbacks(new OtaCallbacks());
 
     txChar = svc->createCharacteristic(
