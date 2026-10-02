@@ -7,6 +7,7 @@
 | `esp32dev` | ESP32 DevKit (WROOM-32) | Release build |
 | `esp32s3` | ESP32-S3 DevKitC-1 | Release build, serial log on the native USB port (`ARDUINO_USB_CDC_ON_BOOT=1`) |
 | `esp32s3_test` | ESP32-S3 | Like `esp32s3` plus `-DPIN_TO_SERIAL`: the pairing PIN is printed on serial. **Never release it.** |
+| `esp32dev_test` | ESP32 DevKit | Same for the classic ESP32 |
 
 ```bash
 python -m platformio run -e esp32s3_test -t upload --upload-port COM5

@@ -503,6 +503,38 @@ def stopwatch_frames():
     return out
 
 
+def sw_face(d4, bar):
+    """Stopwatch face on 4 modules: 4 digits, colon, bottom-row bar of `bar` pixels (firmware drawStopwatch)."""
+    f = set()
+    for i, d in enumerate(d4):
+        draw_digit(f, DIGIT_X[i], d)
+    for c in (0, 1):
+        for r in (1, 2, 4, 5):
+            put(f, COLON_X + c, r)
+    for x in range(bar):
+        put(f, x, 7)
+    return f
+
+
+def stopwatch_paused():
+    """Paused at 01:23.4: digits blink (650 ms on, 350 ms off), the tenths bar stays."""
+    out = []
+    for _ in range(3):
+        out.append((sw_face((0, 1, 2, 3), 4 * W8 // 10), 0.65))
+        f = set(); [put(f, x, 7) for x in range(4 * W8 // 10)]
+        out.append((f, 0.35))
+    return out
+
+
+def stopwatch_hours():
+    """After an hour: HH:MM, and the bottom row fills once per minute (sped up here)."""
+    out = []
+    for m in (5, 6):
+        for k in range(16):
+            out.append((sw_face((0, 1, 0, m), (k + 1) * W8 // 16), 0.12))
+    return out
+
+
 def button():
     W, H = 900, 260
     s = [f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {W} {H}' width='{W}' height='{H}'>",
@@ -524,7 +556,8 @@ def button():
 
 IMAGES = [('banner', banner), ('pacman', pacman), ('wiring-esp32s3', lambda: wiring('esp32s3')),
           ('wiring-esp32', lambda: wiring('esp32')), ('setup', setup_flow), ('chain', chain), ('system', system),
-          ('stopwatch', lambda: frames_svg(stopwatch_frames())), ('button', button)]
+          ('stopwatch', lambda: frames_svg(stopwatch_frames())), ('stopwatch-paused', lambda: frames_svg(stopwatch_paused())),
+          ('stopwatch-hours', lambda: frames_svg(stopwatch_hours())), ('button', button)]
 IMAGES += [(f'digits-{s}', (lambda s=s: digit_demo(s))) for s in ('down', 'up', 'dissolve', 'slide', 'flip', 'drop')]
 IMAGES += [('fx-sparkle', lambda: frames_svg(fx_sparkle())), ('fx-wipe', lambda: frames_svg(fx_wipe())),
            ('fx-rain', lambda: frames_svg(fx_rain())), ('fx-boxes', lambda: frames_svg(fx_boxes()))]

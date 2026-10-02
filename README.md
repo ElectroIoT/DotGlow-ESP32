@@ -153,12 +153,21 @@ No app? The clock opens a WiFi hotspot **DotGlow-XXXX**; join it and the setup p
 
 ## Stopwatch
 
+**On the display**
+
+| Running | Paused (blinks) | After an hour |
+|:-:|:-:|:-:|
+| <img src="docs/stopwatch.svg" width="260"> | <img src="docs/stopwatch-paused.svg" width="260"> | <img src="docs/stopwatch-hours.svg" width="260"> |
+| `MM:SS`, tenths fill the bottom row | Digits blink, time kept | `HH:MM`, the bottom row fills once a minute |
+
+**Button wiring (optional)**
+
 <img src="docs/button.svg" alt="Push button from GPIO4 / GPIO13 to GND" width="640">
 
 - **In the app:** *Stopwatch* → Start / Pause / Reset / Back to the clock. The app shows a live copy of the display.
 - **With a button** (optional, from GPIO4 on the S3 / GPIO13 on the ESP32 to GND, no resistor needed):
   tap = start / pause (from the clock: open the stopwatch), hold = reset, hold at 0 = back to the clock.
-- MM:SS, then HH:MM after an hour (HH:MM:SS on 6+ modules). Tenths fill the bottom row; paused digits blink.
+- With 6 or more modules it shows `HH:MM:SS` all the time.
 
 ## Updates
 
