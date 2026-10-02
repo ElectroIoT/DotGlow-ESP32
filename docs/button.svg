@@ -1,0 +1,14 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 260' width='900' height='260'>
+<rect width='900' height='260' rx='20' fill='#14161c'/>
+<rect x='50' y='50' width='240' height='160' rx='14' fill='#10353a' stroke='#1f6b72' stroke-width='2'/>
+<text x='170' y='95' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='18' font-weight='700' fill='#f2f3f7'>ESP32 / S3</text>
+<text x='270' y='145' text-anchor='end' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='14' fill='#e8eaf0'>GPIO4 (S3) · GPIO13</text>
+<text x='270' y='185' text-anchor='end' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='14' fill='#e8eaf0'>GND</text>
+<path d='M290 140 L560 140' stroke='#ffc53d' stroke-width='4'/><path d='M290 180 L560 180' stroke='#9aa0ad' stroke-width='4'/>
+<rect x='560' y='110' width='120' height='100' rx='14' fill='#262a33' stroke='#5a5f6b' stroke-width='2'/>
+<circle cx='620' cy='160' r='30' fill='#ff3b3b'><animate attributeName='r' values='30;26;30;30' keyTimes='0;0.08;0.16;1' dur='2s' repeatCount='indefinite'/></circle>
+<text x='620' y='240' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='13' fill='#9aa0ad'>push button</text>
+<text x='710' y='140' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='14' fill='#e8eaf0'>tap: start / pause</text>
+<text x='710' y='164' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='14' fill='#e8eaf0'>hold: reset</text>
+<text x='710' y='188' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='14' fill='#e8eaf0'>hold at 0: clock</text>
+</svg>

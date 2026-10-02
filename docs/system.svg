@@ -1,0 +1,27 @@
+<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 900 300' width='900' height='300'>
+<rect width='900' height='300' rx='20' fill='#14161c'/>
+<rect x='40' y='80' width='220' height='150' rx='16' fill='#1c1f28' stroke='#3a3f4b' stroke-width='2'/>
+<text x='150.0' y='116' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='19' font-weight='700' fill='#f2f3f7'>DotGlow app</text>
+<text x='150.0' y='142' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='13' fill='#9aa0ad'>Android phone</text>
+<text x='150.0' y='162' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='13' fill='#9aa0ad'>settings · WiFi setup</text>
+<text x='150.0' y='182' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='13' fill='#9aa0ad'>updates · USB flasher</text>
+<rect x='340' y='80' width='220' height='150' rx='16' fill='#10353a' stroke='#1f6b72' stroke-width='2'/>
+<text x='450.0' y='116' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='19' font-weight='700' fill='#f2f3f7'>DotGlow clock</text>
+<text x='450.0' y='142' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='13' fill='#9aa0ad'>ESP32 / ESP32-S3</text>
+<text x='450.0' y='162' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='13' fill='#9aa0ad'>MAX7219 display</text>
+<text x='450.0' y='182' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='13' fill='#9aa0ad'>web page · API</text>
+<rect x='640' y='80' width='220' height='150' rx='16' fill='#1c1f28' stroke='#3a3f4b' stroke-width='2'/>
+<text x='750.0' y='116' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='19' font-weight='700' fill='#f2f3f7'>Internet</text>
+<text x='750.0' y='142' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='13' fill='#9aa0ad'>NTP time</text>
+<text x='750.0' y='162' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='13' fill='#9aa0ad'>firmware releases</text>
+<text x='750.0' y='182' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='13' fill='#9aa0ad'>manoranjan.dev / GitHub</text>
+<path d='M262 140 L338 140' stroke='#4da3ff' stroke-width='3' stroke-dasharray='6 6' opacity='0.6'/>
+<text x='300.0' y='128' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='12' fill='#4da3ff'>Bluetooth LE</text>
+<circle r='5' cy='140' fill='#4da3ff'><animate attributeName='cx' values='262;338' dur='1.6s' begin='0.0s' repeatCount='indefinite'/></circle>
+<circle r='5' cy='140' fill='#4da3ff'><animate attributeName='cx' values='338;262' dur='1.6s' begin='0.8s' repeatCount='indefinite'/></circle>
+<path d='M562 140 L638 140' stroke='#35d07f' stroke-width='3' stroke-dasharray='6 6' opacity='0.6'/>
+<text x='600.0' y='128' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='12' fill='#35d07f'>WiFi</text>
+<circle r='5' cy='140' fill='#35d07f'><animate attributeName='cx' values='562;638' dur='1.9s' begin='0.0s' repeatCount='indefinite'/></circle>
+<circle r='5' cy='140' fill='#35d07f'><animate attributeName='cx' values='638;562' dur='1.9s' begin='0.95s' repeatCount='indefinite'/></circle>
+<text x='450.0' y='270' text-anchor='middle' font-family='Segoe UI,Roboto,Helvetica,Arial,sans-serif' font-size='13' fill='#9aa0ad'>Paired + encrypted Bluetooth (PIN on the display) · the clock works without the phone</text>
+</svg>

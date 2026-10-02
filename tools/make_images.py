@@ -98,9 +98,9 @@ def banner():
         s.append(f"<circle cx='{m.cx(x):g}' cy='{m.cy(7):g}' r='{m.p * 0.36:g}' fill='{RED}' opacity='0'>"
                  f"<animate attributeName='opacity' values='0;1' keyTimes='0;{k:.3f}' calcMode='discrete' dur='{dur}s' repeatCount='indefinite'/></circle>")
     s.append('</g>')
-    s.append(f"<text x='{W / 2}' y='{H - 70}' text-anchor='middle' {FONT} font-size='38' font-weight='700' fill='#f2f3f7'>ESP8266 Matrix Clock</text>")
+    s.append(f"<text x='{W / 2}' y='{H - 70}' text-anchor='middle' {FONT} font-size='38' font-weight='700' fill='#f2f3f7'>DotGlow</text>")
     s.append(f"<text x='{W / 2}' y='{H - 36}' text-anchor='middle' {FONT} font-size='18' fill='#9aa0ad'>"
-             "WiFi setup from your phone · web settings · animations · updates from GitHub</text>")
+             "ESP32 / ESP32-S3 LED matrix clock · Android app over Bluetooth · WiFi · animations</text>")
     s.append('</svg>')
     return '\n'.join(s)
 
@@ -135,17 +135,24 @@ def pacman():
 
 
 # ---- wiring -------------------------------------------------------------------------
-def wiring():
+BOARDS = {
+    'esp32s3': ('ESP32-S3', 'DevKitC-1', [('VCC', '5V', '#ff4d4d'), ('GND', 'GND', '#9aa0ad'), ('DIN', 'GPIO11', '#35d07f'),
+                                          ('CS', 'GPIO10', '#ffc53d'), ('CLK', 'GPIO12', '#4da3ff')]),
+    'esp32': ('ESP32', 'DevKit (WROOM-32)', [('VCC', 'VIN (5V)', '#ff4d4d'), ('GND', 'GND', '#9aa0ad'), ('DIN', 'GPIO23', '#35d07f'),
+                                             ('CS', 'GPIO5', '#ffc53d'), ('CLK', 'GPIO18', '#4da3ff')]),
+}
+
+
+def wiring(key):
+    name, sub, wires = BOARDS[key]
     W, H = 900, 400
     s = [f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {W} {H}' width='{W}' height='{H}'>",
          f"<rect width='{W}' height='{H}' rx='20' fill='#14161c'/>"]
-    # NodeMCU
     s.append("<rect x='50' y='70' width='230' height='270' rx='12' fill='#10353a' stroke='#1f6b72' stroke-width='2'/>")
     s.append("<rect x='120' y='40' width='90' height='42' rx='6' fill='#c9ccd4'/><rect x='140' y='52' width='50' height='18' rx='3' fill='#8b9099'/>")
-    s.append("<rect x='95' y='120' width='140' height='90' rx='6' fill='#1e2126' stroke='#3a3f48'/>")
-    s.append(f"<text x='165' y='160' text-anchor='middle' {FONT} font-size='18' font-weight='700' fill='#e8eaf0'>ESP8266</text>")
-    s.append(f"<text x='165' y='184' text-anchor='middle' {FONT} font-size='13' fill='#9aa0ad'>NodeMCU / D1 mini</text>")
-    # MAX7219 module
+    s.append("<rect x='95' y='110' width='140' height='90' rx='6' fill='#1e2126' stroke='#3a3f48'/>")
+    s.append(f"<text x='165' y='150' text-anchor='middle' {FONT} font-size='19' font-weight='700' fill='#e8eaf0'>{name}</text>")
+    s.append(f"<text x='165' y='174' text-anchor='middle' {FONT} font-size='12.5' fill='#9aa0ad'>{sub}</text>")
     s.append("<rect x='560' y='90' width='300' height='220' rx='12' fill='#12324f' stroke='#2a5d8a' stroke-width='2'/>")
     for i in range(4):
         x = 580 + i * 68
@@ -154,18 +161,17 @@ def wiring():
             for c in range(4):
                 s.append(f"<circle cx='{x + 9 + c * 13.3:.1f}' cy='{119 + r * 13.3:.1f}' r='4' fill='{RED if (r + c + i) % 3 == 0 else OFF}'/>")
     s.append(f"<text x='710' y='205' text-anchor='middle' {FONT} font-size='16' font-weight='700' fill='#e8eaf0'>MAX7219 4-in-1 (8x32)</text>")
-    wires = [('VCC', '5V / VIN', '#ff4d4d'), ('GND', 'GND', '#9aa0ad'), ('DIN', 'D7', '#35d07f'),
-             ('CS', 'D6', '#ffc53d'), ('CLK', 'D5', '#4da3ff')]
     for i, (mod, esp, col) in enumerate(wires):
         y = 235 + i * 16
-        ey = 235 + i * 22
+        ey = 225 + i * 22
         s.append(f"<circle cx='575' cy='{y}' r='5' fill='{col}'/>")
         s.append(f"<text x='590' y='{y + 5}' {FONT} font-size='13' fill='#e8eaf0'>{mod}</text>")
         s.append(f"<circle cx='265' cy='{ey}' r='5' fill='{col}'/>")
         s.append(f"<text x='252' y='{ey + 5}' text-anchor='end' {FONT} font-size='13' fill='#e8eaf0'>{esp}</text>")
-        s.append(f"<path d='M270 {ey} C 420 {ey}, 420 {y}, 570 {y}' fill='none' stroke='{col}' stroke-width='3.5' stroke-linecap='round'/>")
+        s.append(f"<path d='M270 {ey} C 420 {ey}, 420 {y}, 570 {y}' fill='none' stroke='{col}' stroke-width='3.5' stroke-linecap='round'>"
+                 f"<animate attributeName='stroke-dasharray' values='0 400;400 0' dur='1.2s' begin='{i * 0.25}s' fill='freeze'/></path>")
     s.append(f"<text x='{W / 2}' y='375' text-anchor='middle' {FONT} font-size='14' fill='#9aa0ad'>"
-             "Use a 5 V / 1 A supply · CLK and DIN are the ESP8266 hardware SPI pins</text>")
+             "5 V / 1 A supply · match the wire colours · the pin names are printed on both boards</text>")
     s.append('</svg>')
     return '\n'.join(s)
 
@@ -225,11 +231,11 @@ def chain():
     s.append(f"<text x='200' y='474' text-anchor='middle' {FONT} font-size='13' fill='#9aa0ad'>2 A for 8 modules (see table)</text>")
     s.append("<path d='M150 400 L150 250' stroke='#ff4d4d' stroke-width='4'/><path d='M250 400 L250 330' stroke='#9aa0ad' stroke-width='4'/>")
 
-    # ESP8266
+    # controller board
     s.append("<rect x='600' y='400' width='280' height='120' rx='12' fill='#10353a' stroke='#1f6b72' stroke-width='2'/>")
-    s.append(f"<text x='740' y='440' text-anchor='middle' {FONT} font-size='18' font-weight='700' fill='#f2f3f7'>ESP8266 (NodeMCU)</text>")
+    s.append(f"<text x='740' y='440' text-anchor='middle' {FONT} font-size='18' font-weight='700' fill='#f2f3f7'>ESP32 / ESP32-S3</text>")
     s.append(f"<text x='740' y='464' text-anchor='middle' {FONT} font-size='13' fill='#9aa0ad'>VIN from the 5 V rail, GND common</text>")
-    s.append(f"<text x='740' y='500' text-anchor='middle' {FONT} font-size='13' fill='#cfd6e4'>D7 → DIN · D6 → CS · D5 → CLK</text>")
+    s.append(f"<text x='740' y='500' text-anchor='middle' {FONT} font-size='13' fill='#cfd6e4'>DIN, CS and CLK as in the wiring picture</text>")
     s.append("<path d='M640 400 L640 250' stroke='#ff4d4d' stroke-width='3.5'/><path d='M670 400 L670 330' stroke='#9aa0ad' stroke-width='3.5'/>")
     for name, col, y in data:   # ESP -> board 1 IN (right end)
         x = {128: 930, 140: 918, 152: 906}[y]
@@ -242,8 +248,8 @@ def chain():
 # ---- setup flow ---------------------------------------------------------------------
 def setup_flow():
     W, H = 900, 250
-    steps = [('Power on', 'Clock shows', '"WiFi setup"'), ('Join WiFi', 'MatrixClock-XXXX', 'on your phone'),
-             ('Pick network', 'Setup page opens,', 'enter password'), ('Done!', 'Clock scrolls its IP,', 'open it for settings')]
+    steps = [('Install', 'Phone + USB-OTG,', 'app: Install firmware'), ('Pair', 'Tap DotGlow-XXXX,', 'type the PIN shown'),
+             ('WiFi', 'Pick your network', 'in the app'), ('Done!', 'Internet time,', 'every setting in the app')]
     s = [f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {W} {H}' width='{W}' height='{H}'>",
          f"<rect width='{W}' height='{H}' rx='20' fill='#14161c'/>"]
     cw, gap = 185, 32
@@ -449,7 +455,76 @@ def fx_boxes():
     return out
 
 
-IMAGES = [('banner', banner), ('pacman', pacman), ('wiring', wiring), ('setup', setup_flow), ('chain', chain)]
+def system():
+    """Phone <-> clock over Bluetooth, clock <-> internet over WiFi, with moving packets."""
+    W, H = 900, 300
+    s = [f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {W} {H}' width='{W}' height='{H}'>",
+         f"<rect width='{W}' height='{H}' rx='20' fill='#14161c'/>"]
+
+    def box(x, y, w, h, title, lines, fill='#1c1f28', stroke='#3a3f4b'):
+        s.append(f"<rect x='{x}' y='{y}' width='{w}' height='{h}' rx='16' fill='{fill}' stroke='{stroke}' stroke-width='2'/>")
+        s.append(f"<text x='{x + w / 2}' y='{y + 36}' text-anchor='middle' {FONT} font-size='19' font-weight='700' fill='#f2f3f7'>{title}</text>")
+        for k, l in enumerate(lines):
+            s.append(f"<text x='{x + w / 2}' y='{y + 62 + k * 20}' text-anchor='middle' {FONT} font-size='13' fill='#9aa0ad'>{l}</text>")
+
+    box(40, 80, 220, 150, 'DotGlow app', ['Android phone', 'settings · WiFi setup', 'updates · USB flasher'])
+    box(340, 80, 220, 150, 'DotGlow clock', ['ESP32 / ESP32-S3', 'MAX7219 display', 'web page · API'], '#10353a', '#1f6b72')
+    box(640, 80, 220, 150, 'Internet', ['NTP time', 'firmware releases', 'manoranjan.dev / GitHub'])
+
+    def link(x1, x2, y, label, col, dur):
+        s.append(f"<path d='M{x1} {y} L{x2} {y}' stroke='{col}' stroke-width='3' stroke-dasharray='6 6' opacity='0.6'/>")
+        s.append(f"<text x='{(x1 + x2) / 2}' y='{y - 12}' text-anchor='middle' {FONT} font-size='12' fill='{col}'>{label}</text>")
+        for k, (a, b) in enumerate(((x1, x2), (x2, x1))):
+            s.append(f"<circle r='5' cy='{y + (k * 2 - 1) * 0}' fill='{col}'><animate attributeName='cx' values='{a};{b}' "
+                     f"dur='{dur}s' begin='{k * dur / 2}s' repeatCount='indefinite'/></circle>")
+
+    link(262, 338, 140, 'Bluetooth LE', '#4da3ff', 1.6)
+    link(562, 638, 140, 'WiFi', '#35d07f', 1.9)
+    s.append(f"<text x='{W / 2}' y='270' text-anchor='middle' {FONT} font-size='13' fill='#9aa0ad'>"
+             "Paired + encrypted Bluetooth (PIN on the display) · the clock works without the phone</text>")
+    s.append('</svg>')
+    return '\n'.join(s)
+
+
+def stopwatch_frames():
+    """00:00 counting up, tenths filling the bottom row (firmware drawStopwatch)."""
+    out = []
+    for t in range(0, 64):            # 6.4 s in tenths
+        f = set()
+        sec = t // 10
+        for i, d in enumerate((0, 0, 0, sec)):
+            draw_digit(f, DIGIT_X[i], d)
+        for c in (0, 1):
+            for r in (1, 2, 4, 5):
+                put(f, COLON_X + c, r)
+        for x in range((t % 10) * W8 // 10):
+            put(f, x, 7)
+        out.append((f, 0.1))
+    return out
+
+
+def button():
+    W, H = 900, 260
+    s = [f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {W} {H}' width='{W}' height='{H}'>",
+         f"<rect width='{W}' height='{H}' rx='20' fill='#14161c'/>",
+         "<rect x='50' y='50' width='240' height='160' rx='14' fill='#10353a' stroke='#1f6b72' stroke-width='2'/>",
+         f"<text x='170' y='95' text-anchor='middle' {FONT} font-size='18' font-weight='700' fill='#f2f3f7'>ESP32 / S3</text>",
+         f"<text x='270' y='145' text-anchor='end' {FONT} font-size='14' fill='#e8eaf0'>GPIO4 (S3) · GPIO13</text>",
+         f"<text x='270' y='185' text-anchor='end' {FONT} font-size='14' fill='#e8eaf0'>GND</text>",
+         "<path d='M290 140 L560 140' stroke='#ffc53d' stroke-width='4'/><path d='M290 180 L560 180' stroke='#9aa0ad' stroke-width='4'/>",
+         "<rect x='560' y='110' width='120' height='100' rx='14' fill='#262a33' stroke='#5a5f6b' stroke-width='2'/>",
+         "<circle cx='620' cy='160' r='30' fill='#ff3b3b'><animate attributeName='r' values='30;26;30;30' keyTimes='0;0.08;0.16;1' dur='2s' repeatCount='indefinite'/></circle>",
+         f"<text x='620' y='240' text-anchor='middle' {FONT} font-size='13' fill='#9aa0ad'>push button</text>",
+         f"<text x='710' y='140' {FONT} font-size='14' fill='#e8eaf0'>tap: start / pause</text>",
+         f"<text x='710' y='164' {FONT} font-size='14' fill='#e8eaf0'>hold: reset</text>",
+         f"<text x='710' y='188' {FONT} font-size='14' fill='#e8eaf0'>hold at 0: clock</text>",
+         '</svg>']
+    return '\n'.join(s)
+
+
+IMAGES = [('banner', banner), ('pacman', pacman), ('wiring-esp32s3', lambda: wiring('esp32s3')),
+          ('wiring-esp32', lambda: wiring('esp32')), ('setup', setup_flow), ('chain', chain), ('system', system),
+          ('stopwatch', lambda: frames_svg(stopwatch_frames())), ('button', button)]
 IMAGES += [(f'digits-{s}', (lambda s=s: digit_demo(s))) for s in ('down', 'up', 'dissolve', 'slide', 'flip', 'drop')]
 IMAGES += [('fx-sparkle', lambda: frames_svg(fx_sparkle())), ('fx-wipe', lambda: frames_svg(fx_wipe())),
            ('fx-rain', lambda: frames_svg(fx_rain())), ('fx-boxes', lambda: frames_svg(fx_boxes()))]
