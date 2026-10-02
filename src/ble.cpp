@@ -35,17 +35,23 @@ static volatile uint32_t passkeyUntil = 0;
 // =================================================================================
 
 class ServerCallbacks : public NimBLEServerCallbacks {
-    void onConnect(NimBLEServer*, ble_gap_conn_desc* desc) override {
+    // Several links may be open at once (a reopened app while the old link times out,
+    // the phone's own system services...), so the clock keeps advertising while connected:
+    // a stale connection must never lock the app out. Responses go to the newest link.
+    void onConnect(NimBLEServer* s, ble_gap_conn_desc* desc) override {
         connHandle = desc->conn_handle;
-        Serial.println(F("BLE: phone connected"));
+        Serial.printf("BLE: phone connected (%u open)\n", s->getConnectedCount());
+        if (s->getConnectedCount() < CONFIG_BT_NIMBLE_MAX_CONNECTIONS) NimBLEDevice::startAdvertising();
     }
 
-    void onDisconnect(NimBLEServer*) override {
-        connHandle = BLE_HS_CONN_HANDLE_NONE;
-        passkeyUntil = 0;
-        xSemaphoreTake(lock, portMAX_DELAY);
-        rxBuffer = "";
-        xSemaphoreGive(lock);
+    void onDisconnect(NimBLEServer* s, ble_gap_conn_desc* desc) override {
+        if (desc->conn_handle == connHandle) {
+            connHandle = BLE_HS_CONN_HANDLE_NONE;
+            passkeyUntil = 0;
+            xSemaphoreTake(lock, portMAX_DELAY);
+            rxBuffer = "";
+            xSemaphoreGive(lock);
+        }
         Serial.println(F("BLE: phone disconnected"));
         NimBLEDevice::startAdvertising();
     }
