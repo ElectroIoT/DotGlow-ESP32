@@ -4,7 +4,7 @@
 #ifdef CRASH_TEST
 #define FW_VERSION      "0.0.1"               // safe-mode test build (env:crashtest): always older than any release
 #else
-#define FW_VERSION      "0.1.0"               // bump for every release (tools/release.sh reads it from here)
+#define FW_VERSION      "0.2.0"               // bump for every release (tools/release.py reads it from here)
 #endif
 
 #include <MD_MAX72xx.h>

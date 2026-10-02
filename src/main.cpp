@@ -485,6 +485,11 @@ void loop() {
         drawPasskey(pk);
         return;
     }
+    uint8_t pct;
+    if (bleUpdateProgress(pct)) { // the app is sending new firmware
+        drawProgress(pct);
+        return;
+    }
     if      (appMode == MODE_SETUP) setupLoop();
     else if (appMode == MODE_SAFE)  safeLoop();
     else                            clockLoop();

@@ -73,3 +73,21 @@ Requests are handled one at a time in the clock's main loop. Slow operations (`s
 
 `proto` in INFO is bumped only for incompatible changes. New operations and new keys are additive:
 the app hides features a clock doesn't report, and the clock answers unknown ops with 404.
+
+## Firmware update over Bluetooth (firmware 0.2.0+)
+
+INFO also carries `"asset"` (the release file this clock runs, e.g. `firmware-esp32s3.bin`) and
+`"ota":1` when the clock accepts updates over Bluetooth.
+
+| Characteristic | UUID | Properties |
+|---|---|---|
+| OTA | `6f4a0005-1d2c-4a8e-9c3d-2b7e5f9a1c00` | write (with response), encrypted + authenticated |
+
+1. `ota/begin` `{"size": <bytes>, "md5": "<32 hex>"}` -> `{"chunk": <max bytes per write>}`
+2. Write the app image (`firmware-<chip>.bin`, the one that goes to 0x10000) to OTA in order,
+   `chunk` bytes per write. Writes with response: the clock writes each packet to flash before it answers.
+3. `ota/end` -> `"OK"`: size and MD5 checked, the clock restarts about 1.5 s later.
+   Errors: `400` with a message (`Only N of M bytes arrived`, `Invalid firmware: ...`).
+
+`ota/status` -> `{"active","written","size","error"}`; `ota/abort` cancels. A disconnect cancels too.
+While an image arrives the display shows the percentage and a progress bar.

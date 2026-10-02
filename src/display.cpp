@@ -405,6 +405,22 @@ void drawPasskey(uint32_t pk) {
     fbShow();
 }
 
+void drawProgress(uint8_t percent) {
+    if (percent > 100) percent = 100;
+    fbClear();
+    // percentage in small digits on the left, then a bar filling the rest
+    int x = 0;
+    if (percent >= 100) { drawTiny(x, 1, 1); x += 4; }
+    if (percent >= 10)  { drawTiny(x, 1, (percent / 10) % 10); x += 4; }
+    drawTiny(x, 1, percent % 10);
+    int left = 13, right = W - 1;
+    for (int i = left; i <= right; i++) { fbSet(i, 1, true); fbSet(i, 6, true); }
+    for (int y = 1; y <= 6; y++) { fbSet(left, y, true); fbSet(right, y, true); }
+    int fill = left + 1 + (right - left - 1) * percent / 100;
+    for (int i = left + 1; i < fill; i++) for (int y = 3; y <= 4; y++) fbSet(i, y, true);
+    fbShow();
+}
+
 void showModuleNumbers() {
     fbClear();
     for (int m = 0; m < W / 8; m++) {
