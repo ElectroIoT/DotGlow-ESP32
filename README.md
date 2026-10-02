@@ -12,8 +12,8 @@ WiFi + Bluetooth LED-matrix clock firmware for **ESP32** and **ESP32-S3** with M
 | Phase | What | Status |
 |---|---|---|
 | 1 | ESP32 / ESP32-S3 port: same features as the ESP8266 clock (web dashboard, phone WiFi setup, animations, night mode, messages, special days, login, multi-display, GitHub updates, safe mode) | 🟡 builds, boots, setup hotspot up; full hardware test pending |
-| 2 | Bluetooth (BLE) settings service + protocol spec ([docs/PROTOCOL.md](docs/PROTOCOL.md)) | 🟡 built and running; phone test pending |
-| 3 | Android app: pairing (PIN shown on the LED display), dashboard | ⬜ |
+| 2 | Bluetooth (BLE) settings service + protocol spec ([docs/PROTOCOL.md](docs/PROTOCOL.md)) | ✅ paired and tested with a Motorola Edge 40 Neo (Android 15) |
+| 3 | Android app: pairing (PIN shown on the LED display), dashboard | ✅ ([DotGlow-Android](https://github.com/ElectroIoT/DotGlow-Android)) |
 | 4 | Android app: all settings, WiFi setup, app PIN lock | ⬜ |
 | 5 | Firmware updates over Bluetooth from the app | ⬜ |
 | 6 | Flash a new board from the phone over USB-OTG | ⬜ |

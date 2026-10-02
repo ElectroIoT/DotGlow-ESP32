@@ -56,7 +56,11 @@ class ServerCallbacks : public NimBLEServerCallbacks {
         uint32_t pk = esp_random() % 1000000;
         shownPasskey = pk;
         passkeyUntil = (millis() + PASSKEY_SHOW_MS) | 1;
+#ifdef PIN_TO_SERIAL   // test builds only (env:esp32s3_test): lets a developer pair without the display
+        Serial.printf("BLE: pairing PIN %06u (test build)\n", (unsigned)pk);
+#else
         Serial.println(F("BLE: pairing, PIN on the display"));
+#endif
         return pk;
     }
 
