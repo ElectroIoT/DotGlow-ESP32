@@ -8,7 +8,7 @@
 <p align="center">
   <img alt="ESP32 | ESP32-S3" src="https://img.shields.io/badge/board-ESP32%20%7C%20ESP32--S3-ff3b3b">
   <img alt="Display" src="https://img.shields.io/badge/display-MAX7219%208x32%20to%208x128-1f6b72">
-  <img alt="Firmware" src="https://img.shields.io/badge/firmware-0.3.0-22c55e">
+  <img alt="Firmware" src="https://img.shields.io/badge/firmware-0.3.1-22c55e">
   <img alt="PlatformIO" src="https://img.shields.io/badge/build-PlatformIO-orange">
   <img alt="License" src="https://img.shields.io/badge/license-MIT-blue">
 </p>
@@ -33,6 +33,7 @@
 | ✨ **Animations** | 6 digit-change styles, 5 effects (hourly and at power-on), scrolling messages, special days (birthdays...) |
 | 🌙 **Brightness** | Manual, night mode with its own brightness (or display off), optional light sensor (LDR) |
 | ⏱️ **Stopwatch** | From the app or with an optional push button |
+| 🔄 **Rotate 180°** | Mounted upside down? One tap in the app, or double-press BOOT |
 | 🧱 **4 to 16 modules** | 8x32 up to 8x128, any module type (FC-16, generic, Parola, IC-Station), mirror / flip |
 | ⬆️ **Updates** | From GitHub over WiFi, from the app over Bluetooth, or a new board straight from the phone over USB |
 | 🛟 **Safe mode** | After repeated crashes it starts with only WiFi + updates, so a bad update can always be fixed |
@@ -71,8 +72,8 @@ All pictures are generated from the firmware's own fonts and frame logic (`tools
 | ESP32-S3 DevKitC-1 **or** ESP32 DevKit (WROOM-32) | Any flash size from 4 MB. ESP32-S2 has no Bluetooth: not supported |
 | MAX7219 4-in-1 LED matrix (8x32) | The common blue "FC-16" boards. Chain more for 8x64 ... 8x128 |
 | 5 jumper wires | Female-female for most boards |
-| 5 V / 1 A USB adapter + cable | 2 A for 8 modules, see [power](#more-modules-and-power) |
-| *Optional:* 470-1000 µF capacitor | Across 5 V / GND at the display |
+| **5 V / 1 A (or stronger) phone charger** + cable | **Required.** A computer USB port is too weak for the display, see [power](#power-read-this) |
+| 470-1000 µF capacitor | Across VCC / GND at the display (+ leg to VCC). Strongly recommended |
 | *Optional:* LDR + 10 kΩ resistor | Automatic brightness |
 | *Optional:* push button | [Stopwatch](#stopwatch) without the phone |
 
@@ -95,6 +96,19 @@ Using an ESP8266 / NodeMCU instead? That is the [ESP8266 Matrix Clock](https://g
 | *Stopwatch button (optional)* | GPIO4 | GPIO13 |
 
 **Light sensor:** LDR from 3V3 to the LDR pin, 10 kΩ from that pin to GND, then turn on *Auto brightness*.
+
+> ⚠️ **ESP32 DevKit:** never use the pins labelled **CLK, SD0, SD1, SD2, SD3, CMD**. They are the board's flash
+> memory pins; a wire there stops the board from starting (`invalid header: 0xffffffff`). The display's CLK goes to
+> **D18**, not to the pin called "CLK". Always wire the display's **IN** end (pins marked DIN), not DOUT.
+
+### Power (read this)
+
+<p align="center"><img src="docs/power.svg" alt="5 V charger to the board, display VCC/GND from 5V/VIN with a capacitor" width="760"></p>
+
+Power the clock from a **5 V / 1 A (or stronger) phone charger**. A computer's USB port cannot drive the display:
+the LEDs stay dim, all LEDs stay on or show garbage, the board keeps restarting and drops off USB.
+That was the cause of every "display does not work" case during testing; a 1 A charger fixed all of them.
+Flashing from a computer is fine; test the display on the charger.
 
 ### More modules and power
 
@@ -149,7 +163,8 @@ No app? The clock opens a WiFi hotspot **DotGlow-XXXX**; join it and the setup p
 
 - **App:** brightness, night mode, time format and zone, digit style, effects, messages, special days, display layout, updates, security.
 - **Web page:** `http://<clock IP>` or `http://dotglow.local`, with an optional login password.
-- **BOOT button:** short press = scroll the IP · hold 5 s = WiFi setup · hold 10 s = remove the web password.
+- **BOOT button:** short press = scroll the IP · **double press = rotate the display 180°** · hold 5 s = WiFi setup ·
+  hold 10 s = remove the web password.
 
 ## Stopwatch
 
@@ -182,8 +197,11 @@ No app? The clock opens a WiFi hotspot **DotGlow-XXXX**; join it and the setup p
 
 | Problem | Fix |
 |---|---|
-| All LEDs on, nothing else | Check CS and the 5 V supply |
+| Dim, all LEDs stuck on, or garbage | **Power:** use a 5 V / 1 A charger, not a computer USB port; add the capacitor |
+| Only the first module works | A broken link between modules (re-solder the joints between module 1 and 2) |
+| ESP32 doesn't start after wiring | A wire is on CMD / SD0-SD3 / CLK (flash pins): move it |
 | Text scrambled / mirrored | App → Display → module type / mirror / flip |
+| Upside down | App → Display → **Rotate 180°**, the rotate button on the dashboard, or **double-press BOOT** |
 | Keeps restarting | Better 5 V supply, add the capacitor; after 3 crashes it starts in safe mode |
 | Can't pair | Use the PIN on the display (not 0000 / 1234). After a factory reset the app re-pairs by itself |
 | "Getting time..." forever | WiFi has no internet, or the time zone is wrong (App → Clock & time) |

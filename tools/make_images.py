@@ -535,6 +535,43 @@ def stopwatch_hours():
     return out
 
 
+def power():
+    """A 5 V charger powers the clock; the display hangs off 5V/VIN with a capacitor."""
+    W, H = 900, 330
+    s = [f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {W} {H}' width='{W}' height='{H}'>",
+         f"<rect width='{W}' height='{H}' rx='20' fill='#14161c'/>",
+         # charger
+         "<rect x='40' y='80' width='150' height='120' rx='16' fill='#262a33' stroke='#7c8190' stroke-width='2'/>",
+         "<rect x='68' y='58' width='22' height='24' rx='3' fill='#aeb2bc'/><rect x='140' y='58' width='22' height='24' rx='3' fill='#aeb2bc'/>",
+         f"<text x='115' y='136' text-anchor='middle' {FONT} font-size='28' font-weight='800' fill='#f2f3f7'>5 V</text>",
+         f"<text x='115' y='164' text-anchor='middle' {FONT} font-size='13' fill='#9aa0ad'>1 A or more</text>",
+         f"<text x='115' y='226' text-anchor='middle' {FONT} font-size='13' fill='#9aa0ad'>phone charger</text>",
+         "<path d='M190 140 L280 140' stroke='#c8ccd6' stroke-width='6'/>",
+         f"<text x='235' y='128' text-anchor='middle' {FONT} font-size='12' fill='#9aa0ad'>USB</text>",
+         # board
+         "<rect x='280' y='70' width='200' height='150' rx='14' fill='#10353a' stroke='#1f6b72' stroke-width='2'/>",
+         f"<text x='380' y='104' text-anchor='middle' {FONT} font-size='16' font-weight='700' fill='#f2f3f7'>ESP32 / ESP32-S3</text>",
+         f"<text x='468' y='154' text-anchor='end' {FONT} font-size='13' fill='#e8eaf0'>5V / VIN</text>",
+         f"<text x='468' y='194' text-anchor='end' {FONT} font-size='13' fill='#e8eaf0'>GND</text>",
+         # wires + capacitor
+         "<path d='M480 150 L560 150 L560 120 L640 120' fill='none' stroke='#ff4d4d' stroke-width='4'/>",
+         "<path d='M480 190 L540 190 L540 170 L640 170' fill='none' stroke='#9aa0ad' stroke-width='4'/>",
+         "<path d='M580 120 L580 136' stroke='#ff4d4d' stroke-width='3'/><rect x='566' y='136' width='28' height='4' fill='#e8eaf0'/>",
+         "<path d='M566 152 Q 580 144 594 152' fill='none' stroke='#e8eaf0' stroke-width='4'/><path d='M580 150 L580 170' stroke='#9aa0ad' stroke-width='3'/>",
+         f"<text x='580' y='238' text-anchor='middle' {FONT} font-size='12' fill='#ffc53d'>470-1000 µF (+ to VCC)</text>",
+         # display
+         "<rect x='640' y='80' width='230' height='130' rx='12' fill='#12324f' stroke='#2a5d8a' stroke-width='2'/>",
+         f"<text x='655' y='124' {FONT} font-size='13' fill='#e8eaf0'>VCC</text><text x='655' y='174' {FONT} font-size='13' fill='#e8eaf0'>GND</text>",
+         f"<text x='770' y='150' text-anchor='middle' {FONT} font-size='15' font-weight='700' fill='#e8eaf0'>MAX7219</text>",
+         f"<text x='770' y='170' text-anchor='middle' {FONT} font-size='12' fill='#9aa0ad'>(IN side)</text>",
+         f"<text x='{W / 2}' y='278' text-anchor='middle' {FONT} font-size='14' fill='#ff8a8a'>"
+         "A computer USB port is too weak: dim or garbled display, all LEDs stuck on, the board restarts</text>",
+         f"<text x='{W / 2}' y='302' text-anchor='middle' {FONT} font-size='13' fill='#9aa0ad'>"
+         "8+ modules: separate 5 V / 2-4 A supply for the display, GND joined to the ESP32 GND</text>",
+         '</svg>']
+    return '\n'.join(s)
+
+
 def button():
     W, H = 900, 260
     s = [f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {W} {H}' width='{W}' height='{H}'>",
@@ -557,7 +594,7 @@ def button():
 IMAGES = [('banner', banner), ('pacman', pacman), ('wiring-esp32s3', lambda: wiring('esp32s3')),
           ('wiring-esp32', lambda: wiring('esp32')), ('setup', setup_flow), ('chain', chain), ('system', system),
           ('stopwatch', lambda: frames_svg(stopwatch_frames())), ('stopwatch-paused', lambda: frames_svg(stopwatch_paused())),
-          ('stopwatch-hours', lambda: frames_svg(stopwatch_hours())), ('button', button)]
+          ('stopwatch-hours', lambda: frames_svg(stopwatch_hours())), ('button', button), ('power', power)]
 IMAGES += [(f'digits-{s}', (lambda s=s: digit_demo(s))) for s in ('down', 'up', 'dissolve', 'slide', 'flip', 'drop')]
 IMAGES += [('fx-sparkle', lambda: frames_svg(fx_sparkle())), ('fx-wipe', lambda: frames_svg(fx_wipe())),
            ('fx-rain', lambda: frames_svg(fx_rain())), ('fx-boxes', lambda: frames_svg(fx_boxes()))]

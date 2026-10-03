@@ -4,7 +4,7 @@
 #ifdef CRASH_TEST
 #define FW_VERSION      "0.0.1"               // safe-mode test build (env:crashtest): always older than any release
 #else
-#define FW_VERSION      "0.3.0"               // bump for every release (tools/release.py reads it from here)
+#define FW_VERSION      "0.3.1"               // bump for every release (tools/release.py reads it from here)
 #endif
 
 #include <MD_MAX72xx.h>
@@ -34,11 +34,12 @@
 #define FLIP_HORIZONTAL 0                     // 1 = mirror left-right (both = upside down)
 
 // ---- Button ------------------------------------------------------------------
-// The BOOT button on both DevKits. Short press = scroll IP, hold 5 s = WiFi setup,
+// The BOOT button on both DevKits. Short press = scroll IP, double press = rotate 180, hold 5 s = WiFi setup,
 // hold 10 s = remove the settings password.
 #define PIN_BUTTON      0
 #define BUTTON_HOLD_MS  5000
 #define BUTTON_PASS_MS  10000
+#define DOUBLE_PRESS_MS 450                   // two short presses within this = rotate the display 180
 
 // ---- Optional stopwatch button (push button from the pin to GND) ---------------------
 // Tap: start / pause (from the clock: open the stopwatch). Hold: reset, then back to the clock.

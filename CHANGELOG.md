@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 (2026-10-03)
+- BOOT button double press rotates the display 180° (upside down) and back; the app has a matching switch.
+- Docs: power from a 5 V / 1 A (or stronger) charger, not a computer USB port (dim / stuck / garbled display and
+  restarts were all power); flash-pin warning for the ESP32 DevKit; `tools/display-test` for wiring checks.
+
 ## 0.3.0 (2026-10-02)
 - Stopwatch: `stopwatch` op, stopwatch screen (MM:SS / HH:MM, tenths bar, blinking when paused), optional push
   button on GPIO4 (S3) / GPIO13 (ESP32).

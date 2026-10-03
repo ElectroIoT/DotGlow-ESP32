@@ -168,13 +168,20 @@ void serviceWait(uint32_t ms) {
 
 // BOOT button, acted on when released:
 //   short press      -> scroll the IP address
+//   double press     -> rotate the display 180 degrees (upside down) and back
 //   hold 5..10 s     -> forget WiFi and open the setup hotspot
 //   hold 10 s+       -> remove the settings-page password (forgotten password)
 // While held, the display shows what letting go will do. Returns true while that
 // hint is on screen, so the normal display code leaves it alone.
 static bool handleButton() {
     static uint32_t downAt = 0;
+    static uint32_t tapAt = 0;   // a short press waiting to see if a second one follows
     bool down = digitalRead(PIN_BUTTON) == LOW;
+
+    if (tapAt && !down && millis() - tapAt >= DOUBLE_PRESS_MS) {   // it stayed a single press
+        tapAt = 0;
+        if (appMode == MODE_CLOCK) scrollRequest = String("IP ") + WiFi.localIP().toString();
+    }
 
     if (down) {
         if (!downAt) downAt = millis() | 1;
@@ -201,8 +208,17 @@ static bool handleButton() {
         settingsSave();
         scrollText("WiFi reset");
         restart();
-    } else if (held > 40 && held < 1500 && appMode == MODE_CLOCK) {
-        scrollRequest = String("IP ") + WiFi.localIP().toString();
+    } else if (held > 40 && held < 1500) {
+        if (tapAt && millis() - tapAt < DOUBLE_PRESS_MS) {   // double press: turn the display upside down
+            tapAt = 0;
+            bool rotate = !(cfg.flipH && cfg.flipV);
+            cfg.flipH = cfg.flipV = rotate;
+            settingsSave();
+            Serial.printf("Button: display %s\n", rotate ? "rotated 180" : "normal");
+            scrollText(rotate ? "Rotated" : "Normal");
+        } else {
+            tapAt = millis() | 1;
+        }
     }
     fbClear();
     fbShow();
