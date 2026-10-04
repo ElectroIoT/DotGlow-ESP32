@@ -15,6 +15,18 @@
 
 ---
 
+## Get the app (closed testing)
+
+The DotGlow Android app is in **closed testing on Google Play**. Anyone in the tester group gets it:
+
+1. Join the Google Group **[devmeettesters@googlegroups.com](https://groups.google.com/g/devmeettesters)**
+   with the Google account you use on Play.
+2. Open **[play.google.com/apps/testing/com.electroiot.dotglow](https://play.google.com/apps/testing/com.electroiot.dotglow)**
+   and tap **Become a tester**.
+3. Install the app from Google Play and keep it installed for at least 14 days.
+
+Details: [mtpcode.com/apps/dotglow.html](https://mtpcode.com/apps/dotglow.html) · feedback: admin@mtpcode.com
+
 ## Contents
 
 [Features](#features) · [How it works](#how-it-works) · [Parts](#parts) · [Wiring](#wiring) ·
@@ -129,7 +141,7 @@ Above 4 modules feed 5 V to the boards directly (not through the ESP32), with a 
 
 ### A. From your phone (easiest)
 
-1. Install the **DotGlow** app.
+1. Install the **DotGlow** app (closed testing: see [Get the app](#get-the-app-closed-testing)).
 2. Plug the board into the phone with a USB-OTG adapter (or a USB-C data cable).
 3. In the app: **Install firmware → Find my board → Install**. The app detects ESP32 / ESP32-S3 and writes the right image (about 20-60 s).
 
