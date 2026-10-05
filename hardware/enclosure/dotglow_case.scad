@@ -10,6 +10,7 @@
 // v = up along the face, w = depth into the case (0 = front face). The shell STL comes out front-face-down.
 
 part = "assembly";      // shell | back | testfit | assembly
+bed_rotate = 0;         // turn the exported part on the bed: 45 lets a 6-module case (229 mm) fit a 220 mm bed
 board = "esp32s3";      // esp32s3 | esp32_30pin | esp32_38pin | nodemcu_v2 | nodemcu_v3 | d1_mini (see presets below)
 
 /* [Look] */
@@ -290,13 +291,13 @@ function lit(cn, r) =
 module display_model() {
     color("#111") translate([0, 0, z_matrix + matrix_h / 2]) cube([disp_w, disp_h, matrix_h], center = true);
     for (i = [0 : modules * 8 - 1], j = [0 : 7])        // column 0 on the viewer's left (+u)
-        color(lit(i, j) ? "#ff2020" : "#3a0d0d")
+        color(lit(i - (modules * 8 - 32) / 2, j) ? "#ff2020" : "#3a0d0d")
             translate([disp_w / 2 - 2 - i * 4, disp_h / 2 - 2 - j * 4, z_matrix - 0.4]) cylinder(d = 3, h = 0.4, $fn = 12);
 }
 
-if (part == "shell") shell();
-else if (part == "back") back();
-else if (part == "testfit") testfit();
+if (part == "shell") rotate([0, 0, bed_rotate]) shell();
+else if (part == "back") rotate([0, 0, bed_rotate]) back();
+else if (part == "testfit") rotate([0, 0, bed_rotate]) testfit();
 else {
     color("#2b2f38") to_world() shell_body();
     color("#2b2f38") difference() { to_world() pedestal(); translate([-500, -500, -1000]) cube([1000, 1000, 1000]); }

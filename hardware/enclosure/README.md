@@ -54,6 +54,23 @@ Each folder has six files. **Print one shell + the matching back:**
 
 Snap shells only fit snap backs, and screw shells only fit screw backs.
 
+## 6 modules (8x48, wider clock)
+
+<p align="center">
+  <img src="images/case-front-6modules.png" alt="6-module DotGlow case" width="560">
+  <img src="images/bed-fit-6modules.png" alt="6-module shell turned 45 degrees on a 220 x 220 bed" width="230">
+</p>
+
+For a 4-in-1 board plus two single modules (or any 6-module chain). The case is **229 mm** wide, too long to lie
+straight on a 220 mm bed. Laid **diagonally** it needs only **189 x 189 mm**, so it prints on every
+220 x 220 (Ender 3, Neptune, A1, K1, ...) and bigger printer. The files in
+[stl/6-modules](stl/6-modules) are **already turned 45°**: load and print, don't rotate them back.
+Same folders and file names as above, plus `dotglow-testfit.stl`. Acrylic: **196 x 36 x 2 mm**.
+In the app: **Display → Modules = 6**; with 6 modules you can also turn on **Show seconds**.
+
+8 modules (8x64, 293 mm) does not fit a 220 bed even diagonally: it needs a 300 mm bed, or ask for a split
+version (printed in two halves).
+
 Also: [stl/dotglow-testfit.stl](stl/dotglow-testfit.stl) (15 min, same for every board: checks the acrylic and the
 display fit) and [stl/extras](stl/extras) (ESP32-S3: 30° lean shell, back for a threaded panel DC jack, back with a
 plain tape ridge).
