@@ -1,6 +1,9 @@
 # Changelog
 
 ## Unreleased
+- Hardware: 6-module "plus" case set: loose light shield (a grid with one cell per LED), name plate ("ElectroIoT.in")
+  engraved in the base, DHT22 sensor pocket (mounting only; the firmware cannot read it yet). Options `shield`,
+  `nameplate` / `plate_text`, `dht22` in `dotglow_case.scad`; set in `hardware/enclosure/stl/6-modules-plus`.
 - Hardware: 3D-printed case "Lean" in `hardware/enclosure` (OpenSCAD, parametric): leaning face, smoked acrylic
   front, floating pedestal, removable back plate (screws or snap) with a DC jack, optional USB-C slot, 12x12 button
   and LDR. STLs + preview images.

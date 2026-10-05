@@ -2,11 +2,16 @@
 # Exports every board preset: screw + snap backs, shells with and without the stopwatch button.
 #   ./tools_export.sh      4 modules (8x32)  -> stl/
 #   ./tools_export.sh 6    6 modules (8x48)  -> stl/6-modules/, turned 45 deg to fit a 220 mm bed
+#   ./tools_export.sh 6 plus   6 modules + light shield + name plate + DHT22 pocket -> stl/6-modules-plus/
 cd "$(dirname "$0")"
 O="${OPENSCAD:-/c/Program Files/OpenSCAD/openscad.com}"
 M=${1:-4}
 if [ "$M" = 4 ]; then OUT=stl; ROT=0; else OUT=stl/$M-modules; ROT=45; fi
 EXTRA="-D modules=$M -D bed_rotate=$ROT"
+if [ "$2" = plus ]; then
+  OUT=$OUT-plus
+  EXTRA="$EXTRA -D shield=true -D nameplate=true -D dht22=true"
+fi
 mkdir -p "$OUT"
 "$O" -o $OUT/dotglow-testfit.stl -D 'part="testfit"' $EXTRA dotglow_case.scad 2>&1 | grep -E "ERROR" 
 for b in esp32s3:esp32-s3 esp32_30pin:esp32-devkit-30pin esp32_38pin:esp32-devkit-38pin nodemcu_v2:esp8266-nodemcu-v2 nodemcu_v3:esp8266-nodemcu-v3 d1_mini:esp8266-d1-mini; do
@@ -19,7 +24,11 @@ for b in esp32s3:esp32-s3 esp32_30pin:esp32-devkit-30pin esp32_38pin:esp32-devki
   done
   echo "done $key"
 done
-if [ "$M" = 4 ]; then
+if [ "$2" = plus ]; then
+"$O" -o $OUT/dotglow-light-shield.stl     -D 'part="shield"'    -D modules=$M -D shield=true dotglow_case.scad 2>&1 | grep -E "ERROR"
+"$O" -o $OUT/dotglow-nameplate-inlay.stl  -D 'part="nameplate"' -D modules=$M -D nameplate=true dotglow_case.scad 2>&1 | grep -E "ERROR"
+fi
+if [ "$M" = 4 ] && [ "$2" != plus ]; then
 mkdir -p stl/extras
 "$O" -o stl/extras/esp32-s3-shell-lean30-button.stl -D 'part="shell"' -D 'lean=30' dotglow_case.scad 2>&1 | grep -E "ERROR"
 "$O" -o stl/extras/esp32-s3-back-panel-jack.stl -D 'part="back"' -D 'dc_jack="panel"' dotglow_case.scad 2>&1 | grep -E "ERROR"

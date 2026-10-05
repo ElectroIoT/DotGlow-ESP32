@@ -71,6 +71,48 @@ In the app: **Display → Modules = 6**; with 6 modules you can also turn on **S
 8 modules (8x64, 293 mm) does not fit a 220 bed even diagonally: it needs a 300 mm bed, or ask for a split
 version (printed in two halves).
 
+## 6 modules "plus": light shield + name plate + DHT22 pocket
+
+<p align="center"><img src="images/plus-front.png" alt="6-module plus case: grid over the LEDs, ElectroIoT.in on the base" width="720"></p>
+
+Same 6-module case with three extras switched on. The normal 6-module files stay as they are; this is a second set in
+[stl/6-modules-plus](stl/6-modules-plus) (same board folders, same file names, pre-rotated 45° for a 220 mm bed).
+
+**1. Light shield** (`dotglow-light-shield.stl`, print 1): a loose 2 mm grid between the acrylic and the LEDs, one
+3.2 mm square cell per LED. Every dot becomes a sharp square and the light of one LED can't glow into the next.
+
+<p align="center"><img src="images/plus-shield.png" alt="Light shield grid" width="520"></p>
+
+- Print it **flat, in black** (matte black PLA or PETG; white or grey leaks light). 0.2 mm layers, **2 walls, 0 %
+  infill, top / bottom layers 0**: the grid walls are 0.8 mm, exactly two perimeters. 30-40 mm/s. It is 194 x 36 mm,
+  so it fits a 220 bed without turning.
+- Assembly: acrylic first, then the grid (it drops into a seat in the shell, either side up), then the display, which
+  clicks in behind the hooks and presses the grid against the acrylic. The case is 2 mm deeper (44 mm).
+- With the shield on, the front window is a little bigger so the outer LEDs aren't covered.
+
+**2. Name plate** "ElectroIoT.in": engraved 0.8 mm into the front of the base. Reads left to right from the front.
+For a two-colour look print `dotglow-nameplate-inlay.stl` (the letters, 0.6 mm thick) in another colour and glue it into
+the engraving with a drop of super glue. Another text? Set `plate_text = "Your name"` in `dotglow_case.scad`
+(`plate_size` = letter height) and render the shell again.
+
+<p align="center"><img src="images/plus-nameplate.png" alt="Name plate on the base, seen from the front" width="520"></p>
+
+**3. DHT22 pocket** (temperature + humidity sensor, AM2302): at the left end of the case, walled off from the warm
+display and ESP32 by a partition, because a DHT22 inside the main box would read 3-5 °C too warm. The sensor stands
+between two small walls, its grid face towards the end wall, which has vent slots (and two more slots in the top).
+Wires leave through the gap behind the partition.
+
+<p align="center"><img src="images/plus-dht22-plan.png" alt="Plan view of the DHT22 pocket: partition, sensor, vented end wall" width="420"></p>
+
+- Sensor: **DHT22 / AM2302, 15.1 x 25.2 x 7.7 mm**. The **3-pin module** version (pull-up resistor on the board) is
+  easiest: **+ → 3V3**, **− → GND**, **OUT → a free GPIO** (suggested: ESP32-S3 **GPIO5**, ESP32 **GPIO27**,
+  ESP8266 **D2**). Push it in with the grid facing the vented end wall, a drop of hot glue on the back.
+- **The firmware cannot read it yet.** The pocket and the wiring are ready; showing temperature / humidity on the display
+  and in the app is a planned firmware feature (see the roadmap). Until then the sensor just sits there.
+- The LDR leads run along the top or bottom edge of the pocket to the gap behind the partition, like the sensor wires.
+
+Not needed? Use the normal [6-modules](stl/6-modules) files.
+
 Also: [stl/dotglow-testfit.stl](stl/dotglow-testfit.stl) (15 min, same for every board: checks the acrylic and the
 display fit) and [stl/extras](stl/extras) (ESP32-S3: 30° lean shell, back for a threaded panel DC jack, back with a
 plain tape ridge).
@@ -97,18 +139,23 @@ plain tape ridge).
 | `usb_slot` | `true` / `false`: slot for the board's USB port in the right side | `true` |
 | `button` | `"tactile12"` (12x12 switch + round cap on a small perfboard) / `"panel"` (7 mm) / `"none"` | `"tactile12"` |
 | `ldr` | `true` / `false`: 5 mm light sensor hole, front left | `true` |
+| `shield` | `true` / `false`: seat for the light shield (print `part="shield"`) | `false` |
+| `nameplate`, `plate_text` | `true` / `false`: text engraved in the base (and the text, `plate_size` = height) | `false`, `"ElectroIoT.in"` |
+| `dht22` | `true` / `false`: DHT22 pocket at the left end | `false` |
 | `acr_t` | acrylic thickness; `0` = no acrylic, print a 0.6 mm front skin in white / natural filament | `2.0` |
 
 **Measure your parts first** (clone boards differ): `disp_w`, `disp_h`, `matrix_h` (LED front to PCB front),
 the board preset in `boards = [...]` (length, width, USB slot), `dupont` (16 with Dupont plugs, about 8 if you solder wires), `dc_body` + `dc_axis` (your jack),
 `tact_stack` (perfboard top to the top of the switch cap).
 
-Render after a change (OpenSCAD 2021+, free), or run `./tools_export.sh` to rebuild every STL:
+Render after a change (OpenSCAD 2021+, free), or run `./tools_export.sh` (4 modules), `./tools_export.sh 6` or
+`./tools_export.sh 6 plus` to rebuild every STL:
 
 ```bash
 openscad -o shell.stl -D 'part="shell"' -D 'board="d1_mini"' dotglow_case.scad
 openscad -o back.stl  -D 'part="back"'  -D 'board="d1_mini"' dotglow_case.scad
 openscad -o shell.stl -D 'part="shell"' -D 'board="esp32s3"' -D 'lean=30' -D 'back_fix="snap"' dotglow_case.scad
+openscad -o shield.stl -D 'part="shield"' -D 'modules=6' -D 'shield=true' dotglow_case.scad
 ```
 
 ## Parts

@@ -245,6 +245,7 @@ No app? The clock opens a WiFi hotspot **DotGlow-XXXX**; join it and the setup p
 | 6 | Flash a new board from the phone over USB-OTG (ESP32, ESP32-S3, ESP8266) | ✅ tested on an ESP32-S3 |
 | 6b | Stopwatch with an optional button | ✅ |
 | 6c | 3D-printed case (OpenSCAD, parametric) | 🟡 designed, test print pending |
+| 6d | Temperature + humidity from a DHT22 (shown on the display and in the app); the case has a pocket for it | ⬜ planned |
 | 7 | Public release | ⬜ |
 
 ## Credits

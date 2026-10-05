@@ -9,7 +9,7 @@
 // Face coordinates (all parts are built in them): u = across the face (+u is the LEFT side seen from the front),
 // v = up along the face, w = depth into the case (0 = front face). The shell STL comes out front-face-down.
 
-part = "assembly";      // shell | back | testfit | assembly
+part = "assembly";      // shell | back | testfit | shield | nameplate | assembly
 bed_rotate = 0;         // turn the exported part on the bed: 45 lets a 6-module case (229 mm) fit a 220 mm bed
 board = "esp32s3";      // esp32s3 | esp32_30pin | esp32_38pin | nodemcu_v2 | nodemcu_v3 | d1_mini (see presets below)
 
@@ -17,6 +17,9 @@ board = "esp32s3";      // esp32s3 | esp32_30pin | esp32_38pin | nodemcu_v2 | no
 lean      = 15;         // face leans back (degrees). 10-20 for a desk; 30 for a low shelf (taller pedestal)
 ped_inset = 16;         // pedestal is this much narrower than the case on each side ("floating" look)
 show_acrylic = false;   // preview only
+show_back = true;       // preview only: hide the back plate to look inside
+cutaway = false;        // preview only: slice the assembly open
+cut_v = 0;
 
 /* [Options] */
 usb_slot  = true;       // slot in the right side for the board's USB port (USB-C or micro-USB, from the preset)
@@ -25,6 +28,15 @@ board_mount = "cradle"; // ESP32 on the back plate: "cradle" (guides + snap hook
 back_fix  = "screw";    // "screw" (4 x M3) | "snap" (push-fit clips, no screws)
 button    = "tactile12";// "tactile12" (12x12 switch + its round cap, on a small perfboard) | "panel" | "none"
 ldr       = true;       // 5 mm LDR hole, front left (auto brightness)
+
+/* [Extras: off by default, the 6-module "plus" set turns them on] */
+shield    = false;      // light shield: printed grid between acrylic and LEDs, one sharp square per LED (print part="shield")
+shield_t  = 2.0;        // thickness of the grid (the case gets this much deeper)
+nameplate = false;      // text engraved in the front of the pedestal
+plate_text = "ElectroIoT.in";
+plate_size = 6.5;       // letter height, mm
+plate_depth = 0.8;      // engraving depth (part="nameplate" prints letters to glue in, in another colour)
+dht22     = false;      // DHT22 / AM2302 temperature + humidity sensor pocket at the left end, walled off from the warm electronics
 
 /* [Parts: measure these] */
 modules   = 4;
@@ -56,6 +68,7 @@ usb_h     = bp[5];
 acr_t      = 2.0;       // smoked acrylic. 0 = printed 0.6 mm front skin instead
 acr_margin = 2;
 
+dht_w = 15.1; dht_t = 7.7; dht_l = 25.2;   // DHT22 body: width, thickness, length (pins extra, about 7.5 mm)
 dc_body   = [9.0, 11.0, 14.2]; // DC-005 body: width, height (pin side down), length (plug direction)
 dc_axis   = 6.5;        // DC-005: plug axis height above the body's pin side
 dc_fit    = 0.2;        // gap around the body for super glue
@@ -87,7 +100,11 @@ inner_h = max(disp_h + 2 * acr_margin, board_w) + 2 * tol;
 outer_w = inner_w + 2 * wall;
 outer_h = inner_h + 2 * wall;
 
-z_matrix   = front + acr_t;
+z_matrix   = front + acr_t + (shield ? shield_t : 0);
+win_w      = disp_w - (shield ? 0.8 : 2);        // front window; with the shield it lines up with the outer LED cells
+win_h      = disp_h - (shield ? 0.8 : 2);
+shield_w   = disp_w + 2.4;
+shield_h   = disp_h + 2.4;
 z_disp_pcb = z_matrix + matrix_h;
 z_disp_bk  = z_disp_pcb + disp_pcb;
 z_board_tp = z_disp_bk + disp_back + 1.5 + board_top;
@@ -166,6 +183,12 @@ module shell_body() {
                         cube([2 * boss_r, 0.2, depth_in - boss_w0 + 4]);
                 }
             if (ldr) translate([ldr_u, 0, front]) cylinder(d = 5.2 + 2.4, h = 3);
+            if (shield)                                                  // seat: the loose grid drops in here, display presses it
+                translate([0, 0, front + acr_t]) linear_extrude(shield_t) difference() {
+                    rrect(inner_w - 0.02, inner_h - 0.02, 1);
+                    square([shield_w + 2 * tol, shield_h + 2 * tol], center = true);
+                }
+            if (dht22) dht_pocket();
             // display snap hooks at the four corners: the display clicks in behind them (posts on the back add pressure)
             for (su = [-1, 1], sv = [-1, 1]) translate([su * (disp_w / 2 + tol), sv * (disp_h / 2 - 4), 0])
                 rotate([90, 0, 0]) linear_extrude(5, center = true) scale([su, 1]) polygon([
@@ -180,8 +203,8 @@ module shell_body() {
         // window with an outward bevel, or the thin printed skin
         if (acr_t > 0)
             translate([0, 0, -0.01]) hull() {
-                linear_extrude(0.01) square([disp_w - 2 + 2 * front, disp_h - 2 + 2 * front], center = true);
-                translate([0, 0, front + 0.02]) linear_extrude(0.01) square([disp_w - 2, disp_h - 2], center = true);
+                linear_extrude(0.01) square([win_w + 2 * front, win_h + 2 * front], center = true);
+                translate([0, 0, front + 0.02]) linear_extrude(0.01) square([win_w, win_h], center = true);
             }
         else translate([0, 0, skin]) linear_extrude(front) square([disp_w + 2 * tol, disp_h + 2 * tol], center = true);
         if (back_fix == "screw")
@@ -195,12 +218,47 @@ module shell_body() {
         if (button != "none") translate([btn_u, outer_h / 2 - wall / 2, btn_w]) rotate([90, 0, 0])
             cylinder(d = button == "tactile12" ? tact_cap_d : panel_btn_d, h = wall + 2, center = true);
         for (i = [-2 : 2]) translate([i * 12 + RIGHT * 10, outer_h / 2, depth_in - 10]) cube([7, wall * 3, 2.2], center = true);
+        if (dht22) dht_vents();
     }
+}
+
+// DHT22 pocket (left end, seen from the front): a partition keeps the display / board heat out, the sensor stands
+// between two side walls with its grid face to the vented end wall, wires leave through a gap at the back.
+dht_pu = disp_w / 2 + 3.0;                        // partition centre (u)
+dht_w0 = z_matrix + 1.0;                          // sensor body starts just behind the LDR tube
+module dht_pocket() {
+    w1 = depth_in - 8;                            // partition stops here: wires pass behind it
+    translate([dht_pu - 0.8, -inner_h / 2 - 0.1, z_matrix]) cube([1.6, inner_h + 0.2, w1 - z_matrix]);
+    for (sv = [-1, 1])
+        translate([dht_pu + 0.8, sv * (dht_w / 2 + 0.9) - 0.6, dht_w0]) cube([inner_w / 2 - dht_pu - 0.7, 1.2, dht_l + 0.4]);
+    translate([dht_pu + 0.8, -4, dht_w0]) cube([1.2, 8, dht_l + 0.4]);          // spacer rib behind the sensor
+}
+module dht_vents() {
+    for (v = [-6, -2, 2, 6]) translate([outer_w / 2 - wall / 2, v, dht_w0 + (dht_l + 0.4) / 2]) cube([wall * 2 + 0.2, 2.2, 16], center = true);
+    for (k = [0, 1]) translate([disp_w / 2 + 8 + 4 * k, outer_h / 2 - wall / 2, dht_w0 + (dht_l + 0.4) / 2]) cube([2.2, wall * 2 + 0.2, 16], center = true);
+}
+
+module dht_model() {      // preview stand-in: body standing in the pocket, grid face towards the vented end wall, 4 pins at the back
+    translate([dht_pu + 2.0 + dht_t / 2, 0, dht_w0 + dht_l / 2]) cube([dht_t, dht_w, dht_l], center = true);
+    for (k = [-1.5 : 1 : 1.5]) translate([dht_pu + 2.0 + dht_t / 2, k * 2.54, dht_w0 + dht_l + 3.5]) cube([0.6, 0.6, 7], center = true);
+}
+
+// Name plate: engraved in the front of the pedestal; part="nameplate" = the letters to glue in (print in another colour).
+plate_v = -outer_h / 2 - ped_h / (2 * c);
+module plate_text() mirror([1, 0, 0]) text(plate_text, size = plate_size, halign = "center", valign = "center", font = "Liberation Sans:style=Bold", $fn = 24);
+module nameplate_cut() if (nameplate) translate([0, plate_v, -0.01]) linear_extrude(plate_depth + 0.01) plate_text();
+module nameplate_inlay() linear_extrude(plate_depth - 0.2) offset(delta = -0.12) plate_text();
+module pedestal_final() difference() { pedestal(); nameplate_cut(); }
+
+// Light shield: 3.2 mm square cell per LED on the 4 mm pitch (0.8 mm walls = two perimeters), print flat
+module shield() linear_extrude(shield_t) difference() {
+    square([shield_w, shield_h], center = true);
+    for (i = [0 : modules * 8 - 1], j = [0 : 7]) translate([disp_w / 2 - 2 - i * 4, disp_h / 2 - 2 - j * 4]) square(3.2, center = true);
 }
 
 module desk_cut() from_world() translate([-500, -500, -1000]) cube([1000, 1000, 1000]);
 
-module shell() difference() { union() { shell_body(); pedestal(); } desk_cut(); }
+module shell() difference() { union() { shell_body(); pedestal_final(); } desk_cut(); }
 
 // ---------- back plate ----------
 // back_u() is laid out in face coordinates (x = u); back() mirrors it into the real, printable part
@@ -298,14 +356,21 @@ module display_model() {
 if (part == "shell") rotate([0, 0, bed_rotate]) shell();
 else if (part == "back") rotate([0, 0, bed_rotate]) back();
 else if (part == "testfit") rotate([0, 0, bed_rotate]) testfit();
-else {
-    color("#2b2f38") to_world() shell_body();
-    color("#2b2f38") difference() { to_world() pedestal(); translate([-500, -500, -1000]) cube([1000, 1000, 1000]); }
-    to_world() display_model();
-    if (acr_t > 0 && show_acrylic) color("#140000", 0.25) to_world() translate([0, 0, front + acr_t / 2])
-        cube([disp_w + 2 * acr_margin, disp_h + 2 * acr_margin, acr_t], center = true);
-    color("#3a3f4a") to_world() translate([0, 0, depth]) rotate([0, 180, 0]) back();
-    color("#555") translate([0, 60, -0.5]) cube([320, 200, 1], center = true);   // desk
+else if (part == "shield") shield();
+else if (part == "nameplate") nameplate_inlay();
+else difference() {
+    union() {
+        color("#2b2f38") to_world() shell_body();
+        color("#2b2f38") difference() { to_world() pedestal_final(); translate([-500, -500, -1000]) cube([1000, 1000, 1000]); }
+        if (shield) color("#1c1c1c") to_world() translate([0, 0, front + acr_t]) shield();
+        to_world() display_model();
+        if (dht22) color("#f2f2f2") to_world() dht_model();
+        if (acr_t > 0 && show_acrylic) color("#140000", 0.25) to_world() translate([0, 0, front + acr_t / 2])
+            cube([disp_w + 2 * acr_margin, disp_h + 2 * acr_margin, acr_t], center = true);
+        if (show_back) color("#3a3f4a") to_world() translate([0, 0, depth]) rotate([0, 180, 0]) back();
+        color("#555") translate([0, 60, -0.5]) cube([320, 200, 1], center = true);   // desk
+    }
+    if (cutaway) to_world() translate([-1000, cut_v, -100]) cube([2000, 1000, 1000]);   // preview only: remove everything above v = cut_v
 }
 
 echo(str("Outer case (mm): ", outer_w, " x ", outer_h, " x ", depth, ", pedestal ", ped_h, " mm, lean ", lean, " deg"));
