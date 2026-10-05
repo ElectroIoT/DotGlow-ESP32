@@ -18,7 +18,8 @@ show_acrylic = false;   // preview only
 
 /* [Options] */
 usb_c     = true;       // slot in the right side for the ESP32's USB-C ports (flashing / USB power)
-dc_jack   = "pcb";      // "pcb" (DC-005 style) | "panel" (threaded jack with nut) | "none"
+dc_jack   = "pcb";      // "pcb" (DC-005: glued into a cradle, wires soldered) | "panel" (threaded jack + nut) | "none"
+board_mount = "cradle"; // ESP32 on the back plate: "cradle" (guides + snap hook, tape optional) | "tape" (ridge + foam tape)
 back_fix  = "screw";    // "screw" (4 x M3) | "snap" (push-fit clips, no screws)
 button    = "tactile12";// "tactile12" (12x12 switch + its round cap, on a small perfboard) | "panel" | "none"
 ldr       = true;       // 5 mm LDR hole, front left (auto brightness)
@@ -43,8 +44,9 @@ usb_h     = 5;
 acr_t      = 2.0;       // smoked acrylic. 0 = printed 0.6 mm front skin instead
 acr_margin = 2;
 
-dc_body   = [9.2, 11.2];// DC-005 body: width x height (the plug goes in along its length)
-dc_grip   = 7;          // how far the holder grips the jack body
+dc_body   = [9.0, 11.0, 14.2]; // DC-005 body: width, height (pin side down), length (plug direction)
+dc_axis   = 6.5;        // DC-005: plug axis height above the body's pin side
+dc_fit    = 0.2;        // gap around the body for super glue
 dc_plug_d = 6.6;        // hole for the 5.5 mm plug barrel
 dc_boss_d = 11.5;       // counterbore for the plug's insulator, so the barrel goes fully in
 dc_panel_d = 8.2;       // threaded panel jack hole
@@ -197,13 +199,11 @@ module back_u() {
                 for (sv = [-1, 1]) translate([0, sv * (inner_h / 2 - tol), back_t + snap_w]) rotate([0, 90, 0])
                     cylinder(r = 0.6, h = inner_w - 24, center = true, $fn = 12);
             translate([board_mid + LEFT * 2, 0, back_t]) linear_extrude(dupont) square([board_l - 16, 8], center = true);   // board ridge
-            translate([board_far + LEFT * 1.2, 0, back_t]) linear_extrude(dupont + board_pcb + 1) square([2.4, 8], center = true);
+            if (board_mount == "cradle") board_cradle();
+            else translate([board_far + LEFT * 1.2, 0, back_t]) linear_extrude(dupont + board_pcb + 1) square([2.4, 8], center = true);
             for (u = posts_u, sv = [-1, 1]) translate([u, sv * post_v, back_t])
                 linear_extrude(depth_in - z_disp_bk + 0.3) square([3, 2.4], center = true);
-            if (dc_jack == "pcb") translate([dc_pos[0], dc_pos[1], back_t]) linear_extrude(dc_grip) difference() {
-                square([dc_body[0] + 2 * tol + 3.2, dc_body[1] + 2 * tol + 3.2], center = true);
-                square([dc_body[0] + 2 * tol, dc_body[1] + 2 * tol], center = true);
-            }
+            if (dc_jack == "pcb") dc005_cradle();
         }
         if (back_fix == "screw") for (su = [-1, 1], sv = [-1, 1]) translate([su * boss_u, sv * boss_v, -1]) {
             cylinder(d = 3.4, h = back_t + 2);
@@ -222,6 +222,34 @@ module back_u() {
         if (dc_jack != "none") translate([dc_pos[0], dc_pos[1] - 10, -0.01]) linear_extrude(0.6)
             text("5V", size = 4, halign = "center", font = "Liberation Sans:style=Bold");
     }
+}
+
+// DC-005 cradle: the jack's front face sits on the plate, plug hole in line with its barrel. Four walls hold it
+// straight; glue windows in the side walls take a drop of super glue; the rear end and the pins stay free for soldering.
+// The pins point down (-v).
+module dc005_cradle() {
+    bw = dc_body[0] + 2 * dc_fit; bh = dc_body[1] + 2 * dc_fit;
+    cy = dc_pos[1] - (dc_axis - dc_body[1] / 2);          // body centre (the barrel sits above it)
+    hgt = dc_body[2] - 4;                                 // last 4 mm + rear pin uncovered
+    translate([dc_pos[0], cy, back_t]) difference() {
+        linear_extrude(hgt) square([bw + 3.2, bh + 3.2], center = true);
+        translate([0, 0, -1]) linear_extrude(hgt + 2) square([bw, bh], center = true);
+        translate([0, -bh / 2 - 1, 5 + 50]) cube([bw + 4, 3, 100], center = true);    // pin side: low wall, pins free
+        for (sx = [-1, 1]) translate([sx * (bw / 2 + 0.8), 0, 3 + 50]) cube([3, 4, 100], center = true);   // glue windows
+    }
+}
+
+// ESP32 cradle on the ridge: side guides stop it sliding, a snap hook clicks over the antenna end of the PCB,
+// the USB-C end rests against the right wall. Optional strip of foam tape on the ridge.
+module board_cradle() {
+    top = back_t + dupont + board_pcb;                    // PCB top surface
+    for (u = [board_end - RIGHT * 8, board_far + RIGHT * 8], sv = [-1, 1])
+        translate([u, sv * (board_w / 2 + tol + 0.8), back_t]) linear_extrude(top - back_t + 1) square([6, 1.6], center = true);
+    // snap hook: thin arm just past the antenna end, lip over the PCB edge, sloped top so the board pushes it aside
+    au = board_far - RIGHT * tol;                         // arm inner face
+    translate([0, -4, 0]) rotate([90, 0, 0]) mirror([0, 0, 1]) linear_extrude(8) polygon([
+        [au, back_t], [au - RIGHT * 1.4, back_t], [au - RIGHT * 1.4, top + 3], [au, top + 3],
+        [au + RIGHT * 1.0, top + 0.1], [au, top + 0.1]]);
 }
 
 // ---------- test fit ----------
