@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+- Hardware: 3D-printed case "Lean" in `hardware/enclosure` (OpenSCAD, parametric): leaning face, smoked acrylic
+  front, floating pedestal, removable back plate (screws or snap) with a DC jack, optional USB-C slot, 12x12 button
+  and LDR. STLs + preview images.
+
 ## 0.3.1 (2026-10-03)
 - BOOT button double press rotates the display 180° (upside down) and back; the app has a matching switch.
 - Docs: power from a 5 V / 1 A (or stronger) charger, not a computer USB port (dim / stuck / garbled display and

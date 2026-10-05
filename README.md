@@ -88,6 +88,9 @@ All pictures are generated from the firmware's own fonts and frame logic (`tools
 | 470-1000 µF capacitor | Across VCC / GND at the display (+ leg to VCC). Strongly recommended |
 | *Optional:* LDR + 10 kΩ resistor | Automatic brightness |
 | *Optional:* push button | [Stopwatch](#stopwatch) without the phone |
+| *Optional:* 3D-printed case | [hardware/enclosure](hardware/enclosure): leaning desk case, smoked acrylic front, DC jack, OpenSCAD |
+
+<p align="center"><a href="hardware/enclosure"><img src="hardware/enclosure/images/case-front.png" alt="DotGlow 3D-printed case" width="560"></a></p>
 
 Using an ESP8266 / NodeMCU instead? That is the [ESP8266 Matrix Clock](https://github.com/ElectroIoT/ESP8266-Matrix-Clock) (WiFi + web page, no Bluetooth). The DotGlow app can install it too.
 
@@ -241,6 +244,7 @@ No app? The clock opens a WiFi hotspot **DotGlow-XXXX**; join it and the setup p
 | 5 | Firmware updates over Bluetooth | ✅ 1.2 MB in 26 s |
 | 6 | Flash a new board from the phone over USB-OTG (ESP32, ESP32-S3, ESP8266) | ✅ tested on an ESP32-S3 |
 | 6b | Stopwatch with an optional button | ✅ |
+| 6c | 3D-printed case (OpenSCAD, parametric) | 🟡 designed, test print pending |
 | 7 | Public release | ⬜ |
 
 ## Credits
