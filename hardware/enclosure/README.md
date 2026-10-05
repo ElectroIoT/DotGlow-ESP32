@@ -2,7 +2,9 @@
 
 <p align="center"><img src="images/case-front.png" alt="DotGlow case on a desk, the display showing 12:45" width="760"></p>
 
-A desk case for an **ESP32-S3 DevKitC-1** and a **MAX7219 4-in-1 (8x32)** display:
+A desk case for a **MAX7219 4-in-1 (8x32)** display and **your choice of board**: ESP32-S3, ESP32 DevKit (30 or 38
+pins / ESP32-S), ESP8266 NodeMCU (v2 or v3) or Wemos D1 mini. Ready-made STLs for every board, with or without the
+stopwatch button, screwed or snap-fit back.
 
 - **Leaning face** (15° by default) so you read it straight from a desk or a shelf. Any angle: `lean = 30` makes the
   pedestal taller by itself.
@@ -10,8 +12,8 @@ A desk case for an **ESP32-S3 DevKitC-1** and a **MAX7219 4-in-1 (8x32)** displa
 - **Floating pedestal**: narrower than the case, so the clock looks like it hovers.
 - **Open back** with a **removable back plate**, closed with **4 screws** or **push-fit snaps**.
 - **DC jack** in the back plate (PCB jack like DC-005, or a threaded panel jack).
-- Optional **USB-C slot** for the ESP32 (flashing / USB power), **push button** on top (12x12 switch with its round
-  cap, or a panel button), **light sensor** hole.
+- **USB slot** on the right side in line with the board's USB port (USB-C or micro-USB), **push button** on top
+  (12x12 switch with its round cap), **light sensor** hole.
 
 Fully parametric OpenSCAD: [dotglow_case.scad](dotglow_case.scad).
 
@@ -27,17 +29,39 @@ Fully parametric OpenSCAD: [dotglow_case.scad](dotglow_case.scad).
   <img src="images/case-side.png" alt="Side: leaning face on the pedestal" width="340">
 </p>
 
-## Files
+## Pick your board
 
-| File | Print | How |
+| Your board | Firmware | Folder |
 |---|---|---|
-| [stl/dotglow-testfit.stl](stl/dotglow-testfit.stl) | 1 (optional, ~15 min) | front face down. Check that the acrylic and the display drop in |
-| [stl/dotglow-shell.stl](stl/dotglow-shell.stl) | 1 | **front face down** (smooth front from the bed). The pedestal prints at an angle, no supports |
-| [stl/dotglow-back.stl](stl/dotglow-back.stl) | 1 | outside face down (posts up) |
+| ESP32-S3 DevKitC-1 (N8R2 / N16R8, two USB-C) | DotGlow (app + Bluetooth) | [stl/esp32-s3](stl/esp32-s3) |
+| ESP32 DevKit V1, 30 pins (DOIT, micro-USB) | DotGlow (app + Bluetooth) | [stl/esp32-devkit-30pin](stl/esp32-devkit-30pin) |
+| ESP32 DevKitC / "ESP32-S", 38 pins | DotGlow (app + Bluetooth) | [stl/esp32-devkit-38pin](stl/esp32-devkit-38pin) |
+| ESP8266 NodeMCU v2 (Amica, CP2102, narrow) | [ESP8266 Matrix Clock](https://github.com/ElectroIoT/ESP8266-Matrix-Clock) (WiFi + web page) | [stl/esp8266-nodemcu-v2](stl/esp8266-nodemcu-v2) |
+| ESP8266 NodeMCU v3 (LoLin, CH340, wide) | ESP8266 Matrix Clock | [stl/esp8266-nodemcu-v3](stl/esp8266-nodemcu-v3) |
+| ESP8266 Wemos / LOLIN D1 mini | ESP8266 Matrix Clock | [stl/esp8266-d1-mini](stl/esp8266-d1-mini) |
 
-Variants in [stl/variants/](stl/variants): snap-fit shell + back (`*-snap.stl`, no screws), back for a threaded panel
-jack (`dotglow-back-panel-jack.stl`), back with only a tape ridge for the ESP32 (`dotglow-back-tape.stl`),
-30° shell (`dotglow-shell-lean30.stl`).
+Not sure which NodeMCU you have? Measure the width: about **26 mm = v2**, about **31 mm = v3**.
+The DotGlow app installs the right firmware for every one of them (*Install firmware*).
+
+Each folder has six files. **Print one shell + the matching back:**
+
+| You want | Shell | Back |
+|---|---|---|
+| Stopwatch button, screws | `shell-button.stl` | `back.stl` |
+| No button, screws | `shell-no-button.stl` | `back.stl` |
+| Stopwatch button, snap-fit (no screws) | `shell-snap-button.stl` | `back-snap.stl` |
+| No button, snap-fit | `shell-snap-no-button.stl` | `back-snap.stl` |
+
+Snap shells only fit snap backs, and screw shells only fit screw backs.
+
+Also: [stl/dotglow-testfit.stl](stl/dotglow-testfit.stl) (15 min, same for every board: checks the acrylic and the
+display fit) and [stl/extras](stl/extras) (ESP32-S3: 30° lean shell, back for a threaded panel DC jack, back with a
+plain tape ridge).
+
+| Part | Orientation on the bed |
+|---|---|
+| shell | **front face down** (smooth front from the bed); the pedestal prints at an angle, no supports |
+| back | outside face down (posts up) |
 
 <p align="center">
   <img src="images/case-shell.png" alt="Shell from the back: display sleeve, screw bosses, button rails" width="420">
@@ -52,21 +76,22 @@ jack (`dotglow-back-panel-jack.stl`), back with only a tape ridge for the ESP32 
 | `back_fix` | `"screw"` (4 x M3) / `"snap"` (push-fit, finger notch at the bottom) | `"screw"` |
 | `dc_jack` | `"pcb"` (DC-005, glued into a cradle, wires soldered) / `"panel"` (8 mm threaded jack + nut) / `"none"` | `"pcb"` |
 | `board_mount` | `"cradle"` (guides + snap hook) / `"tape"` (ridge + foam tape only) | `"cradle"` |
-| `usb_c` | `true` / `false`: slot for the ESP32's USB-C ports in the right side | `true` |
+| `board` | `"esp32s3"`, `"esp32_30pin"`, `"esp32_38pin"`, `"nodemcu_v2"`, `"nodemcu_v3"`, `"d1_mini"` | `"esp32s3"` |
+| `usb_slot` | `true` / `false`: slot for the board's USB port in the right side | `true` |
 | `button` | `"tactile12"` (12x12 switch + round cap on a small perfboard) / `"panel"` (7 mm) / `"none"` | `"tactile12"` |
 | `ldr` | `true` / `false`: 5 mm light sensor hole, front left | `true` |
 | `acr_t` | acrylic thickness; `0` = no acrylic, print a 0.6 mm front skin in white / natural filament | `2.0` |
 
 **Measure your parts first** (clone boards differ): `disp_w`, `disp_h`, `matrix_h` (LED front to PCB front),
-`board_l`, `board_w`, `dupont` (16 with Dupont plugs, about 8 if you solder wires), `dc_body` + `dc_axis` (your jack),
+the board preset in `boards = [...]` (length, width, USB slot), `dupont` (16 with Dupont plugs, about 8 if you solder wires), `dc_body` + `dc_axis` (your jack),
 `tact_stack` (perfboard top to the top of the switch cap).
 
-Render after a change (OpenSCAD 2021+, free):
+Render after a change (OpenSCAD 2021+, free), or run `./tools_export.sh` to rebuild every STL:
 
 ```bash
-openscad -o stl/dotglow-shell.stl -D 'part="shell"' dotglow_case.scad
-openscad -o stl/dotglow-back.stl  -D 'part="back"'  dotglow_case.scad
-openscad -o stl/dotglow-shell.stl -D 'part="shell"' -D 'lean=30' -D 'back_fix="snap"' dotglow_case.scad   # example
+openscad -o shell.stl -D 'part="shell"' -D 'board="d1_mini"' dotglow_case.scad
+openscad -o back.stl  -D 'part="back"'  -D 'board="d1_mini"' dotglow_case.scad
+openscad -o shell.stl -D 'part="shell"' -D 'board="esp32s3"' -D 'lean=30' -D 'back_fix="snap"' dotglow_case.scad
 ```
 
 ## Parts
@@ -103,11 +128,11 @@ openscad -o stl/dotglow-shell.stl -D 'part="shell"' -D 'lean=30' -D 'back_fix="s
 If your jack is a different size, measure it and set `dc_body = [width, height, length]` and `dc_axis` (plug axis
 height above the pin side).
 
-**ESP32-S3 board.** It sits on the **ridge** on the inside of the back plate, **parts side up** (towards the display),
+**The board** (any of the six). It sits on the **ridge** on the inside of the back plate, **parts side up** (towards the display),
 the header pins and Dupont plugs hang down on both sides of the ridge:
 
 - `board_mount = "cradle"` (default): four **side guides** keep it from sliding, the **USB-C end** goes against the
-  right side (ports in line with the side slot), and the other end **snaps under the hook**: press the board down
+  right side (port in line with the side slot), and the other end **snaps under the hook**: press the board down
   until it clicks. To take it out, push the hook back with a fingernail. A strip of foam tape on the ridge is optional
   (stops rattling).
 - `board_mount = "tape"`: only the ridge and an end stop; fix the board with double-sided foam tape or a few dots of
@@ -119,25 +144,33 @@ and lay the plate next to the case without unplugging anything.
 ## Assembly
 
 1. **Flash and test on the bench first** (app → *Install firmware*), powered from the 5 V adapter or a phone charger.
-2. Shell front face down: drop in the **acrylic**, then the **display** with the LEDs first. The display's
-   **DIN (IN) end goes to the right** (seen from the front), the side with the USB-C slot.
+2. Shell front face down: drop in the **acrylic**, then push the **display** in, LEDs first, until it **clicks
+   behind the four hooks** in the corners. The display's **DIN (IN) end goes to the right** (seen from the front),
+   the side with the USB slot.
 3. **DC jack**: glue it into its cradle and solder the two wires (see above).
-4. **Wiring** (power from the jack feeds both, the ESP32 through its 5V pin):
+4. **Wiring.** The DC jack feeds the display and the board (the board through its 5 V pin):
 
-   | From | To |
-   |---|---|
-   | DC jack +5 V | display VCC **and** ESP32 **5V** |
-   | DC jack GND | display GND **and** ESP32 **GND** |
-   | display DIN / CS / CLK | GPIO11 / GPIO10 / GPIO12 |
-   | button (tactile12 / panel) | GPIO4 and GND |
-   | LDR | 3V3 → LDR → GPIO1, 10 kΩ from GPIO1 to GND |
+   | | ESP32-S3 | ESP32 DevKit (30 / 38 pin) | ESP8266 NodeMCU | Wemos D1 mini |
+   |---|---|---|---|---|
+   | DC jack +5 V → display VCC and | 5V | VIN / 5V | VIN | 5V |
+   | DC jack GND → display GND and | GND | GND | GND | G |
+   | display DIN | GPIO11 | D23 | D7 | D7 |
+   | display CS | GPIO10 | D5 | D6 | D6 |
+   | display CLK | GPIO12 | D18 | D5 | D5 |
+   | button (other leg to GND) | GPIO4 (stopwatch) | GPIO13 (stopwatch) | D3 (= FLASH button) | D3 (= FLASH button) |
+   | LDR: 3V3 → LDR → pin, 10 kΩ pin → GND | GPIO1 | GPIO34 | A0 | A0 |
+
+   On ESP8266 boards the ESP8266 Matrix Clock has no stopwatch: the top button works exactly like the board's
+   **FLASH** button (short press = show the IP, hold = reset WiFi / password). Don't hold it while plugging in power
+   (that starts the board in flash mode).
 
    Add the capacitor at the display's VCC / GND. Don't plug USB and the DC adapter in at the same time for long
-   (both feed 5V); for flashing over USB, unplug the adapter.
+   (both feed 5 V); for flashing over USB, unplug the adapter.
 5. **Button**: solder the 12x12 switch in the middle of the perfboard, press its round cap on, slide the perfboard
    into the two rails under the top (from the open back) until the cap comes out of the hole.
 6. **ESP32**: press it into the cradle on the back plate until the hook clicks (see above).
-7. Close the back: the posts press the display against the acrylic. Screws, or push until the snaps click
+7. Close the back: the posts press the display against the acrylic (on the wide boards only beside the board; the
+   hooks hold the rest). Screws, or push until the snaps click
    (open again with a fingernail in the notch at the bottom).
 
 ## Tips

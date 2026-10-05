@@ -10,6 +10,7 @@
 // v = up along the face, w = depth into the case (0 = front face). The shell STL comes out front-face-down.
 
 part = "assembly";      // shell | back | testfit | assembly
+board = "esp32s3";      // esp32s3 | esp32_30pin | esp32_38pin | nodemcu_v2 | nodemcu_v3 | d1_mini (see presets below)
 
 /* [Look] */
 lean      = 15;         // face leans back (degrees). 10-20 for a desk; 30 for a low shelf (taller pedestal)
@@ -17,7 +18,7 @@ ped_inset = 16;         // pedestal is this much narrower than the case on each 
 show_acrylic = false;   // preview only
 
 /* [Options] */
-usb_c     = true;       // slot in the right side for the ESP32's USB-C ports (flashing / USB power)
+usb_slot  = true;       // slot in the right side for the board's USB port (USB-C or micro-USB, from the preset)
 dc_jack   = "pcb";      // "pcb" (DC-005: glued into a cradle, wires soldered) | "panel" (threaded jack + nut) | "none"
 board_mount = "cradle"; // ESP32 on the back plate: "cradle" (guides + snap hook, tape optional) | "tape" (ridge + foam tape)
 back_fix  = "screw";    // "screw" (4 x M3) | "snap" (push-fit clips, no screws)
@@ -33,13 +34,23 @@ disp_pcb  = 1.6;
 disp_back = 3.5;        // parts on the back of the display PCB
 hdr_side  = 16;         // room at each end for the pin headers + Dupont plugs
 
-board_l   = 70;         // ESP32-S3 DevKitC-1
-board_w   = 25.6;
+// Board presets: [name, length, width, tallest top part, USB slot width, USB slot height]. Measure yours; clones vary.
+boards = [
+    ["esp32s3",     70.0, 25.6, 3.5, 24, 5],    // ESP32-S3 DevKitC-1 (N8R2 / N16R8), two USB-C
+    ["esp32_30pin", 51.5, 28.3, 3.2, 12, 7],    // ESP32 DevKit V1 (DOIT, 30 pins), micro-USB
+    ["esp32_38pin", 55.0, 28.2, 3.2, 12, 7],    // ESP32 DevKitC / "ESP32-S" 38 pins, micro-USB (or USB-C)
+    ["nodemcu_v2",  49.0, 26.0, 3.2, 12, 7],    // ESP8266 NodeMCU v2 (Amica, CP2102)
+    ["nodemcu_v3",  58.0, 31.2, 3.2, 12, 7],    // ESP8266 NodeMCU v3 (LoLin, CH340), the wide one
+    ["d1_mini",     34.4, 25.8, 3.2, 12, 7],    // ESP8266 Wemos / LOLIN D1 mini
+];
+bp = boards[search([board], boards)[0]];
+board_l   = bp[1];
+board_w   = bp[2];
 board_pcb = 1.6;
-board_top = 3.5;
+board_top = bp[3];
 dupont    = 16;         // pins + Dupont plugs under the board (8 if you solder wires)
-usb_w     = 24;
-usb_h     = 5;
+usb_w     = bp[4];
+usb_h     = bp[5];
 
 acr_t      = 2.0;       // smoked acrylic. 0 = printed 0.6 mm front skin instead
 acr_margin = 2;
@@ -100,8 +111,10 @@ perf_w0  = depth_in - perf[1] - 0.5;
 btn_w    = button == "tactile12" ? perf_w0 + perf[1] / 2 + 0.5 : z_board_tp + 8;
 rail_end = depth_in - 5;
 
-posts_u  = [RIGHT * (disp_w / 2 - 2), RIGHT * 25, LEFT * 10, LEFT * 32];
 post_v   = disp_h / 2 - 1.4;
+posts_all = [RIGHT * (disp_w / 2 - 2), RIGHT * 25, LEFT * 10, LEFT * 32];
+board_clear = post_v - 1.2 > board_w / 2 + 0.5;  // posts fit beside a narrow board, not a wide one
+posts_u  = [for (u = posts_all) if (board_clear || u * RIGHT < (inner_w / 2 - 0.5 - board_l) - 2.5) u];
 dc_pos   = [LEFT * 45, -4];
 snap_w   = 2.5;          // snap bump distance from the back edge
 
@@ -137,9 +150,13 @@ module shell_body() {
             if (acr_t > 0)
                 for (sx = [-1, 1]) translate([sx * (disp_w / 2 + acr_margin + tol + 0.8), 0, front + acr_t / 2])
                     cube([1.6, inner_h, acr_t], center = true);
-            translate([0, 0, z_matrix]) linear_extrude(matrix_h - 1.5) difference() {
-                rrect(disp_w + 2 * tol + 3.2, inner_h, 0.5);
-                square([disp_w + 2 * tol, disp_h + 2 * tol], center = true);
+            difference() {                                              // display sleeve
+                translate([0, 0, z_matrix]) linear_extrude(matrix_h - 1.5) difference() {
+                    rrect(disp_w + 2 * tol + 3.2, inner_h, 0.5);
+                    square([disp_w + 2 * tol, disp_h + 2 * tol], center = true);
+                }
+                for (su = [-1, 1], sv = [-1, 1])                        // free the snap hooks so they can flex
+                    translate([su * (disp_w / 2 + tol + 0.8), sv * (disp_h / 2 - 4), z_matrix + 1.5 + 50]) cube([1.62, 6.2, 100], center = true);
             }
             if (back_fix == "screw")
                 for (su = [-1, 1], sv = [-1, 1]) hull() {
@@ -148,6 +165,11 @@ module shell_body() {
                         cube([2 * boss_r, 0.2, depth_in - boss_w0 + 4]);
                 }
             if (ldr) translate([ldr_u, 0, front]) cylinder(d = 5.2 + 2.4, h = 3);
+            // display snap hooks at the four corners: the display clicks in behind them (posts on the back add pressure)
+            for (su = [-1, 1], sv = [-1, 1]) translate([su * (disp_w / 2 + tol), sv * (disp_h / 2 - 4), 0])
+                rotate([90, 0, 0]) linear_extrude(5, center = true) scale([su, 1]) polygon([
+                    [0, z_matrix], [1.0, z_matrix], [1.0, z_disp_bk + 2.4], [0, z_disp_bk + 2.4],
+                    [-0.8, z_disp_bk + 0.15], [0, z_disp_bk + 0.15]]);
             if (button == "tactile12")                                  // rails: the perfboard slides in from the back
                 for (su = [-1, 1]) translate([btn_u + su * (perf[0] / 2 + 1), 0, perf_w0 - 1.5]) difference() {
                     translate([-1.5, perf_top - 4.5, 0]) cube([3, inner_h / 2 - perf_top + 4.6, rail_end - perf_w0 + 1.5]);
@@ -167,7 +189,7 @@ module shell_body() {
             for (sv = [-1, 1]) translate([0, sv * inner_h / 2, depth_in - snap_w]) rotate([0, 90, 0])
                 cylinder(r = 0.8, h = inner_w - 20, center = true, $fn = 12);
         if (ldr) translate([ldr_u, 0, -1]) cylinder(d = 5.2, h = front + 5);
-        if (usb_c) translate([RIGHT * (outer_w / 2 - wall / 2), 0, z_board_tp - board_top / 2]) rotate([0, 90, 0])
+        if (usb_slot) translate([RIGHT * (outer_w / 2 - wall / 2), 0, z_board_tp - board_top / 2]) rotate([0, 90, 0])
             linear_extrude(wall + 2, center = true) rrect(usb_h, usb_w, 1.5);
         if (button != "none") translate([btn_u, outer_h / 2 - wall / 2, btn_w]) rotate([90, 0, 0])
             cylinder(d = button == "tactile12" ? tact_cap_d : panel_btn_d, h = wall + 2, center = true);
@@ -192,7 +214,7 @@ module back_u() {
                 rrect(inner_w - 2 * tol, inner_h - 2 * tol, 0.8);
                 rrect(inner_w - 2 * tol - 3, inner_h - 2 * tol - 3, 0.5);
                 if (back_fix == "screw") for (su = [-1, 1], sv = [-1, 1]) translate([su * boss_u, sv * boss_v]) circle(r = boss_r + tol + 0.2);
-                if (usb_c) translate([RIGHT * (inner_w / 2 - 6), 0]) square([12, usb_w + 4], center = true);
+                if (usb_slot) translate([RIGHT * (inner_w / 2 - 6), 0]) square([12, usb_w + 4], center = true);
                 if (button == "tactile12") translate([btn_u, inner_h / 2]) square([perf[0] + 8, 8], center = true);
             }
             if (back_fix == "snap")
@@ -218,9 +240,9 @@ module back_u() {
         for (i = [0 : 5]) for (sv = [-1, 1]) translate([board_far + RIGHT * (12 + i * 10), sv * (outer_h / 2 - 9), -1])
             linear_extrude(back_t + 2) rrect(3, 7, 1.4);
         translate([LEFT * 12, -outer_h / 2 + 6, -0.01]) linear_extrude(0.6)
-            text("DotGlow", size = 5, halign = "center", font = "Liberation Sans:style=Bold");
+            text("DotGlow", size = 5, halign = "center", font = "Liberation Sans:style=Bold", $fn = 12);
         if (dc_jack != "none") translate([dc_pos[0], dc_pos[1] - 10, -0.01]) linear_extrude(0.6)
-            text("5V", size = 4, halign = "center", font = "Liberation Sans:style=Bold");
+            text("5V", size = 4, halign = "center", font = "Liberation Sans:style=Bold", $fn = 12);
     }
 }
 

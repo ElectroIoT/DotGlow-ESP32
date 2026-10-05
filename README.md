@@ -88,7 +88,7 @@ All pictures are generated from the firmware's own fonts and frame logic (`tools
 | 470-1000 µF capacitor | Across VCC / GND at the display (+ leg to VCC). Strongly recommended |
 | *Optional:* LDR + 10 kΩ resistor | Automatic brightness |
 | *Optional:* push button | [Stopwatch](#stopwatch) without the phone |
-| *Optional:* 3D-printed case | [hardware/enclosure](hardware/enclosure): leaning desk case, smoked acrylic front, DC jack, OpenSCAD |
+| *Optional:* 3D-printed case | [hardware/enclosure](hardware/enclosure): leaning desk case, smoked acrylic front, DC jack; STLs for ESP32-S3, ESP32 DevKit, NodeMCU, D1 mini |
 
 <p align="center"><a href="hardware/enclosure"><img src="hardware/enclosure/images/case-front.png" alt="DotGlow 3D-printed case" width="560"></a></p>
 
