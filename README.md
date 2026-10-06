@@ -212,6 +212,7 @@ No app? The clock opens a WiFi hotspot **DotGlow-XXXX**; join it and the setup p
 
 | Problem | Fix |
 |---|---|
+| Board light is on but the app doesn't see the clock | **Join the grounds:** display GND, board GND and the power supply GND must be connected together. Use a stable 5 V supply: a weak one restarts the board when Bluetooth starts |
 | Dim, all LEDs stuck on, or garbage | **Power:** use a 5 V / 1 A charger, not a computer USB port; add the capacitor |
 | Only the first module works | A broken link between modules (re-solder the joints between module 1 and 2) |
 | ESP32 doesn't start after wiring | A wire is on CMD / SD0-SD3 / CLK (flash pins): move it |
@@ -220,6 +221,7 @@ No app? The clock opens a WiFi hotspot **DotGlow-XXXX**; join it and the setup p
 | Keeps restarting | Better 5 V supply, add the capacitor; after 3 crashes it starts in safe mode |
 | Can't pair | Use the PIN on the display (not 0000 / 1234). After a factory reset the app re-pairs by itself |
 | "Getting time..." forever | WiFi has no internet, or the time zone is wrong (App → Clock & time) |
+| Board drops off USB / flash stops half way | Take the display's 5 V wire off the board while flashing (the display draws more than USB gives); short thick data cable, another port |
 | USB install fails | Use a data cable; hold BOOT, tap RESET, release BOOT, try again |
 
 ## For developers
