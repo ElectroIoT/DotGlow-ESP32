@@ -1,0 +1,48 @@
+# Builds the Windows flasher (window + command line) on GitHub's runners.
+# Free code signing via SignPath Foundation is switched on later: see desktop-flasher/SIGNING.md
+name: Desktop flasher
+
+on:
+  workflow_dispatch:
+  push:
+    tags: ['flasher-v*']
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build the exe files
+        working-directory: desktop-flasher
+        shell: cmd
+        run: build.bat
+      - name: Keep the unsigned files
+        id: upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: DotGlowFlasher-unsigned
+          path: |
+            desktop-flasher/dist/DotGlowFlasher.exe
+            desktop-flasher/dist/dotglow-flasher-cli.exe
+
+      # Set the repository variable SIGNPATH_ENABLED=true and the secret SIGNPATH_API_TOKEN after SignPath approves the project.
+      - name: Sign with SignPath
+        if: ${{ vars.SIGNPATH_ENABLED == 'true' }}
+        uses: signpath/github-action-submit-signing-request@v1
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORGANIZATION_ID }}
+          project-slug: dotglow-flasher
+          signing-policy-slug: release-signing
+          github-artifact-id: ${{ steps.upload.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed
+      - name: Keep the signed files
+        if: ${{ vars.SIGNPATH_ENABLED == 'true' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: DotGlowFlasher-signed
+          path: signed
