@@ -22,7 +22,11 @@
    (Hostinger, `domains/manoranjan.dev/public_html/dotglow/`).
 5. Publish for **clocks updating themselves**: a GitHub release on `ElectroIoT/DotGlow-ESP32` with tag `v<version>`
    and assets `version.txt`, `firmware-esp32.bin`, `firmware-esp32s3.bin`. Only works once the repo is public.
-6. Test: a clock on the previous version should offer the update (app *Updates*), and a fresh board should install
+6. Publish for the **web flasher** (https://mtpcode.com/flash/) and the **PC flasher**: run
+   `python tools/make_web_flasher.py` (copies the full images + ESP8266 firmware into the mtpcode repo's
+   `public/flash/` and rewrites the two manifests), then commit + push the mtpcode repo (GitHub Actions deploys it).
+   The PC flasher (`desktop-flasher/`) reads `firmware.json` from step 4, so it needs no extra step.
+7. Test: a clock on the previous version should offer the update (app *Updates*), and a fresh board should install
    from the app's *Install firmware*.
 
 ## firmware.json format

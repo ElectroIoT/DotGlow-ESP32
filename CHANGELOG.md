@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Web flasher at https://mtpcode.com/flash/ (ESP Web Tools; ESP32, ESP32-S3, ESP8266). `tools/make_web_flasher.py`
+  publishes each release's images + manifests to the website repo.
 - Desktop flasher (`desktop-flasher/`): window + command line for PC. Detects the chip, downloads the latest firmware
   from the same catalog the app uses (MD5-checked), full install or update that keeps settings. Tested on an ESP32-S3.
 - Hardware: 6-module "plus" case set: loose light shield (a grid with one cell per LED), name plate ("ElectroIoT.in")

@@ -148,6 +148,11 @@ Above 4 modules feed 5 V to the boards directly (not through the ESP32), with a 
 2. Plug the board into the phone with a USB-OTG adapter (or a USB-C data cable).
 3. In the app: **Install firmware → Find my board → Install**. The app detects ESP32 / ESP32-S3 and writes the right image (about 20-60 s).
 
+### A1. From your browser (nothing to install)
+
+Open **[mtpcode.com/flash](https://mtpcode.com/flash/)** in Chrome or Edge on a computer, plug the board in, press
+**Install**. ESP32, ESP32-S3 and ESP8266 (NodeMCU / D1 mini).
+
 ### A2. From a PC (no phone, no PlatformIO)
 
 [desktop-flasher](desktop-flasher): a small program that finds the board, downloads the latest firmware and installs it

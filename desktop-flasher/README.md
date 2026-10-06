@@ -56,6 +56,9 @@ build.bat
 Makes `dist\DotGlowFlasher.exe` (window, no console) and `dist\dotglow-flasher-cli.exe` with PyInstaller.
 Files are 36 MB because Python and esptool are inside.
 
+**Easier for most people: the [web flasher](https://mtpcode.com/flash/)** does the same in Chrome / Edge with nothing to
+download, so Windows has nothing to block.
+
 **Windows warnings.** The `.exe` files are not code-signed. SmartScreen shows "Windows protected your PC": *More info →
 Run anyway*. With **Smart App Control** or an organisation's App Control policy switched on, Windows refuses unsigned
 programs completely (this happened on the development PC). Options: sign the files with a code-signing certificate,
