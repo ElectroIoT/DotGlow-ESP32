@@ -1,6 +1,8 @@
 # Changelog
 
 ## Unreleased
+- Desktop flasher (`desktop-flasher/`): window + command line for PC. Detects the chip, downloads the latest firmware
+  from the same catalog the app uses (MD5-checked), full install or update that keeps settings. Tested on an ESP32-S3.
 - Hardware: 6-module "plus" case set: loose light shield (a grid with one cell per LED), name plate ("ElectroIoT.in")
   engraved in the base, DHT22 sensor pocket (mounting only; the firmware cannot read it yet). Options `shield`,
   `nameplate` / `plate_text`, `dht22` in `dotglow_case.scad`; set in `hardware/enclosure/stl/6-modules-plus`.

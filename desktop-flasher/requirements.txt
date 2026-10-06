@@ -1,0 +1,4 @@
+esptool>=5.0
+pyserial>=3.5
+pillow>=10          # only to build the icon / window self-test
+pyinstaller>=6      # only to build the .exe

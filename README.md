@@ -148,6 +148,11 @@ Above 4 modules feed 5 V to the boards directly (not through the ESP32), with a 
 2. Plug the board into the phone with a USB-OTG adapter (or a USB-C data cable).
 3. In the app: **Install firmware → Find my board → Install**. The app detects ESP32 / ESP32-S3 and writes the right image (about 20-60 s).
 
+### A2. From a PC (no phone, no PlatformIO)
+
+[desktop-flasher](desktop-flasher): a small program that finds the board, downloads the latest firmware and installs it
+(window or command line, Windows / Linux / macOS). `python desktop-flasher/dotglow_flasher.py` or the `.exe`.
+
 ### B. PlatformIO
 
 ```bash
