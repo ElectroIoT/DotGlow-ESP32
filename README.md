@@ -15,6 +15,8 @@
 
 ---
 
+▶ **Watch the 30-second demo:** [YouTube Short](https://www.youtube.com/watch?v=RAMwpgyiXoM)
+
 ## Get the app (closed testing)
 
 The DotGlow Android app is in **closed testing on Google Play**. Anyone in the tester group gets it:
