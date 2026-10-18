@@ -5,7 +5,8 @@ For building your own board in EasyEDA with your own parts. No copper tracks, ju
 | File | Use |
 |---|---|
 | `dotglow-v1-layout.png` / `.pdf` | picture of the outline, holes, keep-out and part positions |
-| `dotglow-v1-layout.dxf/` | one DXF per layer: `Edge_Cuts` (board outline, import this first), `F_Courtyard`, `F_Silkscreen`, `User_Drawings` |
+| `dotglow-v1-outline-holes.dxf` | **start here**: board outline 128 x 33, four 3.2 mm mounting holes, antenna keep-out, display header pins, USB-C (separate layers, mm, origin bottom-left, Y up) |
+| `dotglow-v1-full-layout.dxf` | everything in one file: outline, part courtyards, silkscreen, drawings (mm, origin bottom-left) |
 | `dotglow-v1-placement.csv` | every part: ref, value, footprint, part, **X / Y in mm from the top-left corner (X right, Y down)**, rotation |
 | `kicad/` | the same placement as a KiCad project (placed, not routed) |
 
@@ -19,6 +20,6 @@ For building your own board in EasyEDA with your own parts. No copper tracks, ju
 
 ## EasyEDA import
 
-- File > Import > DXF, pick `dotglow-v1-Edge_Cuts.dxf` for the outline (units: mm).
+- File > Import > DXF, pick `dotglow-v1-outline-holes.dxf` (units: mm).
 - Or File > Import > KiCad, `kicad/dotglow-v1.kicad_pcb`, and swap the footprints for your own parts. Keep the positions from the CSV.
 - Net names and pin assignments are in `../README.md` (GPIO table) and `kicad/dotglow-v1.kicad_sch`.
