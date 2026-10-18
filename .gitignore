@@ -3,3 +3,6 @@
 *.bin
 src/private_config.h
 release/
+
+hardware/pcb/kicad/~*.lck
+hardware/pcb/kicad/.history/
