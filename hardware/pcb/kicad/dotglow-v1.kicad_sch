@@ -9900,6 +9900,130 @@
 		)
 	)
 	(symbol
+		(lib_id "Connector_Generic:Conn_01x02")
+		(at 243.84 93.98 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "8f3a635d-b404-570a-a7d4-1ef94ede1f4b")
+		(property "Reference" "J7"
+			(at 246.38 88.9 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "STOPWATCH SW"
+			(at 246.38 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical"
+			(at 243.84 93.98 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 243.84 93.98 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "9328c9e3-b5f1-55c8-bb17-a0842a4090dc")
+		)
+		(pin "2"
+			(uuid "6d976a7c-be8d-56c8-9a64-e5275c1a35e9")
+		)
+		(instances
+			(project "dotglow-v1"
+				(path "/6d0007f9-f727-53d9-924c-8f566d92db0b"
+					(reference "J7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 238.76 93.98)
+			(xy 236.22 93.98)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d3deb335-b5dd-553b-8ebf-ebe6de9d05cd")
+	)
+	(global_label "STOPWATCH"
+		(shape passive)
+		(at 236.22 93.98 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "26eda157-7d8d-5523-a2fd-88a90acc4e34")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 236.22 93.98 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 238.76 96.52)
+			(xy 236.22 96.52)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "42d630f5-cc72-5d97-9dfc-094b23009998")
+	)
+	(global_label "GND"
+		(shape passive)
+		(at 236.22 96.52 180)
+		(fields_autoplaced yes)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "8d2de1e1-9505-56c0-a34c-ec5160910f47")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 236.22 96.52 0)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "74xx:74AHCT125")
 		(at 149.86 149.86 0)
 		(unit 1)

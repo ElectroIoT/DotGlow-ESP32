@@ -119,7 +119,7 @@ for n in pads:
 GND_LINKS = []
 # GND pads outside the ESP32 module are tied to the rest of the ground with real tracks (the pour alone leaves islands)
 gnd_pads = [v for key, v in gnd.items() if key[0] != "U1"]
-if len(gnd_pads) >= 2:
+if len(gnd_pads) >= 2 and os.environ.get("ROUTE_GND", "1") != "0":
     pads["GND"] = gnd_pads
     ORDER.append("GND")
 for i, (a, b) in enumerate(GND_LINKS):

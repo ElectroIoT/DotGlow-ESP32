@@ -21,7 +21,7 @@ KICAD = os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs/KiCad/10.0/sh
 if not os.path.isdir(KICAD):
     KICAD = "C:/Program Files/KiCad/10.0/share/kicad"
 HERE = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(HERE, "kicad")
+OUT = os.environ.get("DG_OUT") or os.path.join(HERE, "kicad")
 NAME = "dotglow-v1"
 PROJECT_UUID_NS = uuid.UUID("3d9a41b2-52c7-4f43-8b1e-7a0c9e5d2f11")
 
@@ -237,6 +237,9 @@ part("SW2", "Switch:SW_Push", "BOOT", "Button_Switch_SMD:SW_SPST_B3S-1000", {"1"
      note="GPIO0: hold while pressing RESET to enter the USB bootloader; firmware also uses it (WiFi setup / pairing reset)")
 part("SW3", "Switch:SW_Push", "STOPWATCH", "Button_Switch_SMD:SW_SPST_B3S-1000", {"1": "STOPWATCH", "2": "GND"}, (225, 95), mpn="6x6 SMD tact switch")
 
+part("J7", "Connector_Generic:Conn_01x02", "STOPWATCH SW", "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
+     {"1": "STOPWATCH", "2": "GND"}, (245, 95), note="external stopwatch push button (in parallel with SW3): pin 1 = GPIO4, pin 2 = GND")
+
 # ---- display: 74AHCT125 level shifter (3.3 V GPIO -> 5 V MAX7219) and the 5-pin connector
 part("U3", "74xx:74AHCT125", "74AHCT125", "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm",
      {"1": "GND", "2": "MAX_DIN_3V", "3": "DISP_DIN", "4": "GND", "5": "MAX_CS_3V", "6": "DISP_CS",
@@ -286,7 +289,7 @@ PLACE = {
     "U1": (10.25, 16.5, 90),
     "U2": (31, 6, 0), "C1": (37, 6, 0), "C2": (31, 11.5, 0), "C3": (37, 11.5, 0),
     "R1": (28, 17, 0), "C4": (28, 21, 0),
-    "SW1": (30, 27, 0), "SW2": (40, 27, 0), "SW3": (50, 27, 0),
+    "SW1": (30, 27, 0), "SW2": (40, 27, 0), "SW3": (50, 27, 0), "J7": (57, 27, 0),
     "U4": (53, 12, 0), "C5": (47, 6, 0), "C6": (59, 6, 0), "R3": (47, 17, 90),
     "J5": (66, 25, 0), "TP1": (73, 27, 0), "TP2": (77, 27, 0),
     "U3": (84, 10, 90), "C7": (77, 5, 0),
@@ -524,6 +527,7 @@ def write_pcb():
     text("RST", 32, 31.2, 0.8)
     text("BOOT", 40, 31.2, 0.8)
     text("STOP", 48, 31.2, 0.8)
+    text("SW", 57.5, 31.8, 0.7)
     text("SPK", 66, 31.5, 0.8)
     text("DISPLAY", 118, 28.5, 0.8)
     text("ANT", 2.5, 3, 0.8)

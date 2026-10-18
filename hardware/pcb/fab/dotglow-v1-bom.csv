@@ -10,6 +10,7 @@ DHT22,J3,PinHeader_1x03_P2.54mm_Vertical,1,
 I2C (RTC V2),J4,PinHeader_1x04_P2.54mm_Vertical,1,
 SPEAKER 8R 2W,J5,JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal,1,JST S2B-PH-K-S
 LDR,J6,PinHeader_1x02_P2.54mm_Vertical,1,
+STOPWATCH SW,J7,PinHeader_1x02_P2.54mm_Vertical,1,
 10k,"R1,R4,R5,R8",R_0805_2012Metric,4,
 1k,R11,R_0805_2012Metric,1,
 100k,R3,R_0805_2012Metric,1,
