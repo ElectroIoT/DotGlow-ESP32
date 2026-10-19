@@ -18,7 +18,7 @@ SW1,RESET,SW_SPST_B3S-1000,6x6 SMD tact switch,34,27,0,
 SW2,BOOT,SW_SPST_B3S-1000,6x6 SMD tact switch,44,27,0,GPIO0: hold while pressing RESET to enter the USB bootloader; firmware also uses it (WiFi setup / pairing reset)
 SW3,STOPWATCH,SW_SPST_B3S-1000,6x6 SMD tact switch,54,27,0,
 J7,STOPWATCH SW,JST_XA_B02B-XASK-1-A_1x02_P2.50mm_Vertical,JST B02B-XASK-1-A (LCSC C265077),62.5,27.5,0,"external stopwatch push button (in parallel with SW3): pin 1 = GPIO4, pin 2 = GND"
-U3,74AHCT125,SOIC-14_3.9x8.7mm_P1.27mm,SN74AHCT125D,84,10,90,MAX7219 needs >= 3.5 V logic-high at 5 V; the 4th gate is parked
+U3,74AHCT125,SOIC-14_3.9x8.7mm_P1.27mm,SN74AHCT125DR (LCSC C155176),84,10,90,MAX7219 needs >= 3.5 V logic-high at 5 V; the 4th gate is parked
 C7,100nF,C_0805_2012Metric,,77,5,0,
 J2,DISPLAY IN,PinHeader_1x05_P2.54mm_Vertical,XFCN PZ254V-11-05P 1x5 pin header (LCSC C492404),125.5,11.42,0,to the MAX7219 module IN header: VCC GND DIN CS CLK (check the order on YOUR module)
 U4,MAX98357A,TQFN-16-1EP_3x3mm_P0.5mm_EP1.6x1.6mm,MAX98357AETE+T (LCSC C910544),53,12,0,"GAIN_SLOT floating = 9 dB; SD_MODE high (>1.4 V) = on, mixes L+R"

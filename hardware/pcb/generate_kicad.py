@@ -245,7 +245,7 @@ part("J7", "Connector_Generic:Conn_01x02", "STOPWATCH SW", "Connector_JST:JST_XA
 part("U3", "74xx:74AHCT125", "74AHCT125", "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm",
      {"1": "GND", "2": "MAX_DIN_3V", "3": "DISP_DIN", "4": "GND", "5": "MAX_CS_3V", "6": "DISP_CS",
       "8": "DISP_CLK", "9": "MAX_CLK_3V", "10": "GND", "11": None, "12": "GND", "13": "GND", "7": "GND", "14": "+5V"},
-     (150, 150), mpn="SN74AHCT125D", note="MAX7219 needs >= 3.5 V logic-high at 5 V; the 4th gate is parked")
+     (150, 150), mpn="SN74AHCT125DR (LCSC C155176)", note="MAX7219 needs >= 3.5 V logic-high at 5 V; the 4th gate is parked")
 part("C7", "Device:C", "100nF", FP_C, {"1": "+5V", "2": "GND"}, (330, 150))
 part("J2", "Connector_Generic:Conn_01x05", "DISPLAY IN", "Connector_PinHeader_2.54mm:PinHeader_1x05_P2.54mm_Vertical",
      {"1": "+5V", "2": "GND", "3": "DISP_DIN", "4": "DISP_CS", "5": "DISP_CLK"}, (360, 150), mpn="XFCN PZ254V-11-05P 1x5 pin header (LCSC C492404)",
