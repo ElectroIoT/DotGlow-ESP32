@@ -238,8 +238,8 @@ part("SW2", "Switch:SW_Push", "BOOT", "Button_Switch_SMD:SW_SPST_B3S-1000", {"1"
      note="GPIO0: hold while pressing RESET to enter the USB bootloader; firmware also uses it (WiFi setup / pairing reset)")
 part("SW3", "Switch:SW_Push", "STOPWATCH", "Button_Switch_SMD:SW_SPST_B3S-1000", {"1": "STOPWATCH", "2": "GND"}, (225, 95), mpn="6x6 SMD tact switch")
 
-part("J7", "Connector_Generic:Conn_01x02", "STOPWATCH SW", "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
-     {"1": "STOPWATCH", "2": "GND"}, (245, 95), note="external stopwatch push button (in parallel with SW3): pin 1 = GPIO4, pin 2 = GND")
+part("J7", "Connector_Generic:Conn_01x02", "STOPWATCH SW", "Connector_JST:JST_XA_B02B-XASK-1-A_1x02_P2.50mm_Vertical",
+     {"1": "STOPWATCH", "2": "GND"}, (245, 95), mpn="JST B02B-XASK-1-A (LCSC C265077)", note="external stopwatch push button (in parallel with SW3): pin 1 = GPIO4, pin 2 = GND")
 
 # ---- display: 74AHCT125 level shifter (3.3 V GPIO -> 5 V MAX7219) and the 5-pin connector
 part("U3", "74xx:74AHCT125", "74AHCT125", "Package_SO:SOIC-14_3.9x8.7mm_P1.27mm",
@@ -260,8 +260,8 @@ part("U4", "Audio:MAX98357A", "MAX98357A", "Package_DFN_QFN:TQFN-16-1EP_3x3mm_P0
 part("C5", "Device:C", "10uF 10V", FP_C, {"1": "+5V", "2": "GND"}, (200, 215))
 part("C6", "Device:C", "100nF", FP_C, {"1": "+5V", "2": "GND"}, (215, 215))
 part("R3", "Device:R", "100k", FP_R, {"1": "+3V3", "2": "AMP_SD"}, (230, 215), note="amp on by default; GPIO15 can mute it")
-part("J5", "Connector_Generic:Conn_01x02", "SPEAKER 8R 2W", "Connector_JST:JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal",
-     {"1": "SPK_P", "2": "SPK_N"}, (250, 215), mpn="JST S2B-PH-K-S",
+part("J5", "Connector_Generic:Conn_01x02", "SPEAKER 8R 2W", "Connector_JST:JST_XA_B02B-XASK-1-A_1x02_P2.50mm_Vertical",
+     {"1": "SPK_P", "2": "SPK_N"}, (250, 215), mpn="JST B02B-XASK-1-A (LCSC C265077)",
      note="2030 cavity speaker (20x30 mm, 8 ohm, 2 W); bridge output: neither wire is ground")
 part("TP1", "Connector:TestPoint", "SPK+ pad", "TestPoint:TestPoint_Pad_D2.5mm", {"1": "SPK_P"}, (275, 215), note="solder the speaker wire here instead of the JST")
 part("TP2", "Connector:TestPoint", "SPK- pad", "TestPoint:TestPoint_Pad_D2.5mm", {"1": "SPK_N"}, (290, 215))
@@ -270,14 +270,14 @@ part("TP2", "Connector:TestPoint", "SPK- pad", "TestPoint:TestPoint_Pad_D2.5mm",
 part("RT1", "Device:Thermistor_NTC", "NTC 10k", FP_R06, {"1": "+3V3", "2": "NTC_ADC"}, (150, 265), mpn="10k NTC, B=3950, 0603 (e.g. NCP18XH103F03RB)")
 part("R4", "Device:R", "10k", FP_R, {"1": "NTC_ADC", "2": "GND"}, (170, 265))
 part("C8", "Device:C", "100nF", FP_C, {"1": "NTC_ADC", "2": "GND"}, (185, 265))
-part("J6", "Connector_Generic:Conn_01x02", "LDR", "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical",
-     {"1": "+3V3", "2": "LDR_ADC"}, (205, 265), note="optional LDR (GL5528) between 3V3 and the pin")
+part("J6", "Connector_Generic:Conn_01x02", "LDR", "Connector_JST:JST_XA_B02B-XASK-1-A_1x02_P2.50mm_Vertical",
+     {"1": "+3V3", "2": "LDR_ADC"}, (205, 265), mpn="JST B02B-XASK-1-A (LCSC C265077)", note="optional LDR (GL5528) between 3V3 and the pin")
 part("R8", "Device:R", "10k", FP_R, {"1": "LDR_ADC", "2": "GND"}, (225, 265))
-part("J3", "Connector_Generic:Conn_01x03", "DHT22", "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical",
-     {"1": "+3V3", "2": "DHT_DATA", "3": "GND"}, (245, 265), note="optional DHT22: VCC DATA GND (check YOUR module)")
+part("J3", "Connector_Generic:Conn_01x03", "DHT22", "Connector_JST:JST_XA_B03B-XASK-1_1x03_P2.50mm_Vertical",
+     {"1": "+3V3", "2": "DHT_DATA", "3": "GND"}, (245, 265), mpn="JST B03B-XASK-1 (LCSC C265055)", note="optional DHT22: VCC DATA GND (check YOUR module)")
 part("R5", "Device:R", "10k", FP_R, {"1": "+3V3", "2": "DHT_DATA"}, (265, 265))
-part("J4", "Connector_Generic:Conn_01x04", "I2C (RTC V2)", "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical",
-     {"1": "GND", "2": "+3V3", "3": "I2C_SCL", "4": "I2C_SDA"}, (285, 265), note="for a V2 RTC (PCF8563 / DS3231 module) or other I2C sensors")
+part("J4", "Connector_Generic:Conn_01x04", "I2C (RTC V2)", "Connector_JST:JST_XA_B04B-XASK-1-A_1x04_P2.50mm_Vertical",
+     {"1": "GND", "2": "+3V3", "3": "I2C_SCL", "4": "I2C_SDA"}, (285, 265), mpn="JST B04B-XASK-1-A (LCSC C491709)", note="for a V2 RTC (PCF8563 / DS3231 module) or other I2C sensors")
 part("R6", "Device:R", "4.7k", FP_R, {"1": "+3V3", "2": "I2C_SDA"}, (310, 265))
 part("R7", "Device:R", "4.7k", FP_R, {"1": "+3V3", "2": "I2C_SCL"}, (325, 265))
 
@@ -290,15 +290,15 @@ PLACE = {
     "U1": (12.75, 16.5, 90),
     "U2": (31, 6, 0), "C1": (37, 6, 0), "C2": (31, 11.5, 0), "C3": (37, 11.5, 0),
     "R1": (30, 14.5, 0), "C4": (30, 19, 0),
-    "SW1": (34, 27, 0), "SW2": (44, 27, 0), "SW3": (54, 27, 0), "J7": (61, 27, 0),
+    "SW1": (34, 27, 0), "SW2": (44, 27, 0), "SW3": (54, 27, 0), "J7": (62.5, 27.5, 0),
     "U4": (53, 12, 0), "C5": (47, 6, 0), "C6": (59, 6, 0), "R3": (47, 17, 90),
-    "J5": (70, 25, 0), "TP1": (77, 27, 0), "TP2": (81, 27, 0),
+    "J5": (71.5, 27.5, 0), "TP1": (80, 27, 0), "TP2": (84, 27, 0),
     "U3": (84, 10, 90), "C7": (77, 5, 0),
     "RT1": (92, 4.5, 0), "R4": (96, 4.5, 0), "C8": (100, 4.5, 0),
-    "J6": (91, 12, 0), "R8": (96, 9.5, 0),
-    "J3": (98, 17, 0), "R5": (103, 9.5, 0),
-    "J4": (91, 22, 0), "R6": (105, 4.5, 0), "R7": (109, 4.5, 0),
-    "J1": (108, 29, 0), "U5": (98, 26, 0), "R9": (114, 22, 90), "R10": (117, 22, 90),
+    "J6": (91, 27.5, 0), "R8": (96, 9.5, 0),
+    "J3": (106, 17, 0), "R5": (103, 9.5, 0),
+    "J4": (92, 17, 0), "R6": (105, 4.5, 0), "R7": (109, 4.5, 0),
+    "J1": (108, 29, 0), "U5": (100, 26.5, 0), "R9": (115, 22, 90), "R10": (118, 22, 90),
     "J2": (125.5, 11.42, 0),
     "D1": (113, 4.5, 0), "R11": (117, 4.5, 0),
     "H1": (23.5, 3, 0), "H2": (21, 30, 0), "H3": (125, 3, 0), "H4": (125, 30, 0),
@@ -528,8 +528,8 @@ def write_pcb():
     text("RST", 34, 31.2, 0.8)
     text("BOOT", 44, 31.2, 0.8)
     text("STOP", 54, 31.2, 0.8)
-    text("SW", 61.5, 31.8, 0.7)
-    text("SPK", 70, 31.5, 0.8)
+    text("SW", 63, 31.9, 0.7)
+    text("SPK", 72, 31.9, 0.8)
     text("DISPLAY", 118, 28.5, 0.8)
     text("ANT", 2.5, 3, 0.8)
 

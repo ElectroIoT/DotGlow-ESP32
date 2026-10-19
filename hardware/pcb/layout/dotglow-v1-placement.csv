@@ -3,9 +3,9 @@ Ref,Value,Footprint,Part / MPN,X_mm,Y_mm,Rot_deg,Note
 #,antenna keep-out,,,0,0,0,no copper / parts for X < 6.9 mm (full height)
 U1,ESP32-S3-WROOM-1-N16R8,ESP32-S3-WROOM-1,ESP32-S3-WROOM-1-N16R8 (LCSC C2913202),12.75,16.5,90,"25.5 x 18 mm, PCB antenna at the left end: keep copper and parts out of the antenna zone; IO35-37 not usable (octal PSRAM)"
 J1,USB-C 5V,USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal,GCT USB4105-GF-A,108,29,0,
-R9,5.1k,R_0805_2012Metric,,114,22,90,CC pull-down: asks a USB charger for 5 V
-R10,5.1k,R_0805_2012Metric,,117,22,90,
-U5,USBLC6-2SC6,SOT-23-6,USBLC6-2SC6,98,26,0,
+R9,5.1k,R_0805_2012Metric,,115,22,90,CC pull-down: asks a USB charger for 5 V
+R10,5.1k,R_0805_2012Metric,,118,22,90,
+U5,USBLC6-2SC6,SOT-23-6,USBLC6-2SC6,100,26.5,0,
 U2,AP2112K-3.3,SOT-23-5,AP2112K-3.3TRG1 (600 mA),31,6,0,
 C1,22uF 10V,C_1206_3216Metric,,37,6,0,bulk on the 5 V rail
 C2,22uF 10V,C_1206_3216Metric,,31,11.5,0,
@@ -17,7 +17,7 @@ C4,1uF,C_0805_2012Metric,,30,19,0,EN reset delay
 SW1,RESET,SW_SPST_B3S-1000,6x6 SMD tact switch,34,27,0,
 SW2,BOOT,SW_SPST_B3S-1000,6x6 SMD tact switch,44,27,0,GPIO0: hold while pressing RESET to enter the USB bootloader; firmware also uses it (WiFi setup / pairing reset)
 SW3,STOPWATCH,SW_SPST_B3S-1000,6x6 SMD tact switch,54,27,0,
-J7,STOPWATCH SW,PinHeader_1x02_P2.54mm_Vertical,,61,27,0,"external stopwatch push button (in parallel with SW3): pin 1 = GPIO4, pin 2 = GND"
+J7,STOPWATCH SW,JST_XA_B02B-XASK-1-A_1x02_P2.50mm_Vertical,JST B02B-XASK-1-A (LCSC C265077),62.5,27.5,0,"external stopwatch push button (in parallel with SW3): pin 1 = GPIO4, pin 2 = GND"
 U3,74AHCT125,SOIC-14_3.9x8.7mm_P1.27mm,SN74AHCT125D,84,10,90,MAX7219 needs >= 3.5 V logic-high at 5 V; the 4th gate is parked
 C7,100nF,C_0805_2012Metric,,77,5,0,
 J2,DISPLAY IN,PinHeader_1x05_P2.54mm_Vertical,,125.5,11.42,0,to the MAX7219 module IN header: VCC GND DIN CS CLK (check the order on YOUR module)
@@ -25,17 +25,17 @@ U4,MAX98357A,TQFN-16-1EP_3x3mm_P0.5mm_EP1.6x1.6mm,MAX98357AETE+T (LCSC C910544),
 C5,10uF 10V,C_0805_2012Metric,,47,6,0,
 C6,100nF,C_0805_2012Metric,,59,6,0,
 R3,100k,R_0805_2012Metric,,47,17,90,amp on by default; GPIO15 can mute it
-J5,SPEAKER 8R 2W,JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal,JST S2B-PH-K-S,70,25,0,"2030 cavity speaker (20x30 mm, 8 ohm, 2 W); bridge output: neither wire is ground"
-TP1,SPK+ pad,TestPoint_Pad_D2.5mm,,77,27,0,solder the speaker wire here instead of the JST
-TP2,SPK- pad,TestPoint_Pad_D2.5mm,,81,27,0,
+J5,SPEAKER 8R 2W,JST_XA_B02B-XASK-1-A_1x02_P2.50mm_Vertical,JST B02B-XASK-1-A (LCSC C265077),71.5,27.5,0,"2030 cavity speaker (20x30 mm, 8 ohm, 2 W); bridge output: neither wire is ground"
+TP1,SPK+ pad,TestPoint_Pad_D2.5mm,,80,27,0,solder the speaker wire here instead of the JST
+TP2,SPK- pad,TestPoint_Pad_D2.5mm,,84,27,0,
 RT1,NTC 10k,R_0603_1608Metric,"10k NTC, B=3950, 0603 (e.g. NCP18XH103F03RB)",92,4.5,0,
 R4,10k,R_0805_2012Metric,,96,4.5,0,
 C8,100nF,C_0805_2012Metric,,100,4.5,0,
-J6,LDR,PinHeader_1x02_P2.54mm_Vertical,,91,12,0,optional LDR (GL5528) between 3V3 and the pin
+J6,LDR,JST_XA_B02B-XASK-1-A_1x02_P2.50mm_Vertical,JST B02B-XASK-1-A (LCSC C265077),91,27.5,0,optional LDR (GL5528) between 3V3 and the pin
 R8,10k,R_0805_2012Metric,,96,9.5,0,
-J3,DHT22,PinHeader_1x03_P2.54mm_Vertical,,98,17,0,optional DHT22: VCC DATA GND (check YOUR module)
+J3,DHT22,JST_XA_B03B-XASK-1_1x03_P2.50mm_Vertical,JST B03B-XASK-1 (LCSC C265055),106,17,0,optional DHT22: VCC DATA GND (check YOUR module)
 R5,10k,R_0805_2012Metric,,103,9.5,0,
-J4,I2C (RTC V2),PinHeader_1x04_P2.54mm_Vertical,,91,22,0,for a V2 RTC (PCF8563 / DS3231 module) or other I2C sensors
+J4,I2C (RTC V2),JST_XA_B04B-XASK-1-A_1x04_P2.50mm_Vertical,JST B04B-XASK-1-A (LCSC C491709),92,17,0,for a V2 RTC (PCF8563 / DS3231 module) or other I2C sensors
 R6,4.7k,R_0805_2012Metric,,105,4.5,0,
 R7,4.7k,R_0805_2012Metric,,109,4.5,0,
 H1,M3,MountingHole_3.2mm_M3,,23.5,3,0,
