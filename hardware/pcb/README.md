@@ -17,7 +17,7 @@ EasyEDA: File > Import > KiCad (the `.kicad_pcb` and `.kicad_sch`), or use the p
 
 | Block | Parts |
 |---|---|
-| MCU | ESP32-S3-MINI-1-N8 (LCSC C2913206), antenna end at the left board edge, copper keep-out |
+| MCU | ESP32-S3-WROOM-1-N16R8 (LCSC C2913202, 25.5 x 18 mm), antenna end at the left board edge, copper keep-out. Full pinout: [ESP32-S3-WROOM-1-PINOUT.md](ESP32-S3-WROOM-1-PINOUT.md) |
 | Power | USB-C (5 V only, CC 5.1k), AP2112K-3.3 regulator (600 mA), 22 uF bulk, power LED |
 | USB data | D+/D- to the ESP32-S3 native USB (flash and serial log), USBLC6-2SC6 ESD protection |
 | Display | 74AHCT125 shifts the 3.3 V SPI signals to 5 V for the MAX7219, 5-pin header VCC GND DIN CS CLK |
@@ -40,7 +40,7 @@ No RTC chip in V1: the time comes from NTP over WiFi and from the phone over Blu
 | 10 / 11 / 12 | CS / MOSI(DIN) / CLK | `PIN_CS` and the S3 default SPI pins, through the 74AHCT125 |
 | 13 | DHT_DATA | optional DHT22 |
 | 15 | AMP_SD | amplifier mute / shutdown |
-| 19 / 20 | USB D- / D+ | native USB |
+| 19 / 20 | USB D- / D+ | native USB (module pins 13 / 14) |
 
 Strapping pins 3, 45, 46 are left unused.
 
@@ -59,8 +59,8 @@ Strapping pins 3, 45, 46 are left unused.
 |---|---|
 | **Matrix module** | The M3 hole positions and the 5-pin IN header position are **placeholders**. Measure YOUR module and move `H1..H4` and `J2` in `generate_kicad.py` (PLACE table), or in EasyEDA. Check the header order (VCC GND DIN CS CLK) on your module |
 | Back of the module | Height of the MAX7219 chips and header pins under the new board (stack with 8-10 mm standoffs, or add cutouts) |
-| Antenna | The left 5.3 mm of the board is a copper keep-out. Keep the speaker magnet and metal case away from it |
-| ESP32 footprint | KiCad has no S3-MINI-1 footprint; it uses `ESP32-S2-MINI-1`, which has the same pad layout. Compare with the Espressif datasheet |
+| Antenna | The left 6.9 mm of the board is a copper keep-out. Keep the speaker magnet and metal case away from it |
+| ESP32 footprint | KiCad `RF_Module:ESP32-S3-WROOM-1` (same module). Compare with the Espressif datasheet. N16R8 has octal PSRAM, so IO35-37 are not usable |
 | Speaker | 2030 cavity speaker: confirm size, thickness and lead/connector type, then set the JST or use the solder pads |
 | Parts | Pick LCSC parts that match the footprints (0805 passives, B3S-style 6x6 tact switches, GCT USB4105 or an equal USB-C) |
 | DRC | The generated board is auto-routed with a small built-in router: review the routing before ordering |

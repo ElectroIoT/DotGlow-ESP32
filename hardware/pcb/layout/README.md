@@ -13,9 +13,9 @@ For building your own board in EasyEDA with your own parts. No copper tracks, ju
 ## Board
 
 - 128 x 33 mm, two layers, origin at the top-left corner.
-- **ESP32 antenna keep-out: X < 5.3 mm, full height.** No copper, no parts, no pour there. The module sits at the left edge, antenna end to the left.
+- **ESP32 antenna keep-out: X < 6.9 mm, full height.** No copper, no parts, no pour there. The ESP32-S3-WROOM-1 (25.5 x 18 mm) sits at the left edge, antenna end to the left.
 - Mounting holes `H1..H4` (3.2 mm for M3) are **placeholders**: (23.5, 3), (21, 30), (125, 3), (125, 30). Move them to match your matrix module.
-- `J2` (5-pin DISPLAY IN header, VCC GND DIN CS CLK) is at (122, 11), vertical. Move it to match your matrix module.
+- `J2` (5-pin DISPLAY IN header, VCC GND DIN CS CLK) is at (125.5, 11.42), vertical (pin 1 at the top, 2.54 mm pitch). Move it to match your matrix module.
 - USB-C `J1` (108, 29) sits on the bottom edge. The speaker JST `J5` and the solder pads `TP1` / `TP2` are next to the buttons.
 
 ## EasyEDA import

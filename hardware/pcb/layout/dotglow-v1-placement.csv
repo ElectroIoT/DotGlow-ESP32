@@ -1,7 +1,7 @@
 Ref,Value,Footprint,Part / MPN,X_mm,Y_mm,Rot_deg,Note
 #,board outline,,,0,0,0,"128 x 33 mm, origin = top-left corner, X right, Y down"
-#,antenna keep-out,,,0,0,0,no copper / parts for X < 5.3 mm (full height)
-U1,ESP32-S3-MINI-1-N8,ESP32-S2-MINI-1,ESP32-S3-MINI-1-N8 (LCSC C2913206),10.25,16.5,90,footprint ESP32-S2-MINI-1 has the identical pad layout; keep copper and parts away from the antenna end
+#,antenna keep-out,,,0,0,0,no copper / parts for X < 6.9 mm (full height)
+U1,ESP32-S3-WROOM-1-N16R8,ESP32-S3-WROOM-1,ESP32-S3-WROOM-1-N16R8 (LCSC C2913202),12.75,16.5,90,"25.5 x 18 mm, PCB antenna at the left end: keep copper and parts out of the antenna zone; IO35-37 not usable (octal PSRAM)"
 J1,USB-C 5V,USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal,GCT USB4105-GF-A,108,29,0,
 R9,5.1k,R_0805_2012Metric,,114,22,90,CC pull-down: asks a USB charger for 5 V
 R10,5.1k,R_0805_2012Metric,,117,22,90,
@@ -12,22 +12,22 @@ C2,22uF 10V,C_1206_3216Metric,,31,11.5,0,
 C3,100nF,C_0805_2012Metric,,37,11.5,0,
 D1,Power LED,LED_0805_2012Metric,,113,4.5,0,green or blue
 R11,1k,R_0805_2012Metric,,117,4.5,0,
-R1,10k,R_0805_2012Metric,,28,17,0,EN pull-up
-C4,1uF,C_0805_2012Metric,,28,21,0,EN reset delay
-SW1,RESET,SW_SPST_B3S-1000,6x6 SMD tact switch,30,27,0,
-SW2,BOOT,SW_SPST_B3S-1000,6x6 SMD tact switch,40,27,0,GPIO0: hold while pressing RESET to enter the USB bootloader; firmware also uses it (WiFi setup / pairing reset)
-SW3,STOPWATCH,SW_SPST_B3S-1000,6x6 SMD tact switch,50,27,0,
-J7,STOPWATCH SW,PinHeader_1x02_P2.54mm_Vertical,,57,27,0,"external stopwatch push button (in parallel with SW3): pin 1 = GPIO4, pin 2 = GND"
+R1,10k,R_0805_2012Metric,,30,14.5,0,EN pull-up
+C4,1uF,C_0805_2012Metric,,30,19,0,EN reset delay
+SW1,RESET,SW_SPST_B3S-1000,6x6 SMD tact switch,34,27,0,
+SW2,BOOT,SW_SPST_B3S-1000,6x6 SMD tact switch,44,27,0,GPIO0: hold while pressing RESET to enter the USB bootloader; firmware also uses it (WiFi setup / pairing reset)
+SW3,STOPWATCH,SW_SPST_B3S-1000,6x6 SMD tact switch,54,27,0,
+J7,STOPWATCH SW,PinHeader_1x02_P2.54mm_Vertical,,61,27,0,"external stopwatch push button (in parallel with SW3): pin 1 = GPIO4, pin 2 = GND"
 U3,74AHCT125,SOIC-14_3.9x8.7mm_P1.27mm,SN74AHCT125D,84,10,90,MAX7219 needs >= 3.5 V logic-high at 5 V; the 4th gate is parked
 C7,100nF,C_0805_2012Metric,,77,5,0,
-J2,DISPLAY IN,PinHeader_1x05_P2.54mm_Vertical,,122,11,0,to the MAX7219 module IN header: VCC GND DIN CS CLK (check the order on YOUR module)
+J2,DISPLAY IN,PinHeader_1x05_P2.54mm_Vertical,,125.5,11.42,0,to the MAX7219 module IN header: VCC GND DIN CS CLK (check the order on YOUR module)
 U4,MAX98357A,TQFN-16-1EP_3x3mm_P0.5mm_EP1.6x1.6mm,MAX98357AETE+T (LCSC C910544),53,12,0,"GAIN_SLOT floating = 9 dB; SD_MODE high (>1.4 V) = on, mixes L+R"
 C5,10uF 10V,C_0805_2012Metric,,47,6,0,
 C6,100nF,C_0805_2012Metric,,59,6,0,
 R3,100k,R_0805_2012Metric,,47,17,90,amp on by default; GPIO15 can mute it
-J5,SPEAKER 8R 2W,JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal,JST S2B-PH-K-S,66,25,0,"2030 cavity speaker (20x30 mm, 8 ohm, 2 W); bridge output: neither wire is ground"
-TP1,SPK+ pad,TestPoint_Pad_D2.5mm,,73,27,0,solder the speaker wire here instead of the JST
-TP2,SPK- pad,TestPoint_Pad_D2.5mm,,77,27,0,
+J5,SPEAKER 8R 2W,JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal,JST S2B-PH-K-S,70,25,0,"2030 cavity speaker (20x30 mm, 8 ohm, 2 W); bridge output: neither wire is ground"
+TP1,SPK+ pad,TestPoint_Pad_D2.5mm,,77,27,0,solder the speaker wire here instead of the JST
+TP2,SPK- pad,TestPoint_Pad_D2.5mm,,81,27,0,
 RT1,NTC 10k,R_0603_1608Metric,"10k NTC, B=3950, 0603 (e.g. NCP18XH103F03RB)",92,4.5,0,
 R4,10k,R_0805_2012Metric,,96,4.5,0,
 C8,100nF,C_0805_2012Metric,,100,4.5,0,

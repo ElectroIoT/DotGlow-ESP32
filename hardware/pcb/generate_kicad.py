@@ -182,7 +182,8 @@ def symbol_pin_names(lib_id):
     return out
 
 
-# ---- ESP32-S3-MINI-1-N8 (LCSC C2913206). Pins are assigned BY NAME, every GND pad goes to GND.
+# ---- ESP32-S3-WROOM-1-N16R8 (LCSC C2913202). Pins are assigned BY NAME, every GND pad goes to GND.
+# N16R8 has octal PSRAM: IO35, IO36, IO37 are used inside the module and must stay unconnected.
 # GPIOs 0/4/10/11/12/1 are the pins the DotGlow firmware already uses on the ESP32-S3 (src/config.h).
 ESP_NETS = {
     "3V3": "+3V3", "EN": "EN",
@@ -199,16 +200,16 @@ ESP_NETS = {
     "IO13": "DHT_DATA",       # optional DHT22 header
     "USB_D-": "USB_DN", "USB_D+": "USB_DP",
 }
-_names = symbol_pin_names("RF_Module:ESP32-S3-MINI-1")
+_names = symbol_pin_names("RF_Module:ESP32-S3-WROOM-1")
 ESP_PINS = {}
 for _num, _nm in _names.items():
     if _nm == "GND":
         ESP_PINS[_num] = "GND"
     elif _nm in ESP_NETS:
         ESP_PINS[_num] = ESP_NETS[_nm]
-part("U1", "RF_Module:ESP32-S3-MINI-1", "ESP32-S3-MINI-1-N8", "RF_Module:ESP32-S2-MINI-1", ESP_PINS, (70, 130),
-     mpn="ESP32-S3-MINI-1-N8 (LCSC C2913206)",
-     note="footprint ESP32-S2-MINI-1 has the identical pad layout; keep copper and parts away from the antenna end")
+part("U1", "RF_Module:ESP32-S3-WROOM-1", "ESP32-S3-WROOM-1-N16R8", "RF_Module:ESP32-S3-WROOM-1", ESP_PINS, (70, 130),
+     mpn="ESP32-S3-WROOM-1-N16R8 (LCSC C2913202)",
+     note="25.5 x 18 mm, PCB antenna at the left end: keep copper and parts out of the antenna zone; IO35-37 not usable (octal PSRAM)")
 
 # ---- USB-C power + native USB (flashing, serial log)
 part("J1", "Connector:USB_C_Receptacle_USB2.0_16P", "USB-C 5V", "Connector_USB:USB_C_Receptacle_GCT_USB4105-xx-A_16P_TopMnt_Horizontal",
@@ -286,19 +287,19 @@ for i in range(1, 5):
 
 # ---- PCB floor plan (x right, y down, mm from the top-left corner; board 128 x 33)
 PLACE = {
-    "U1": (10.25, 16.5, 90),
+    "U1": (12.75, 16.5, 90),
     "U2": (31, 6, 0), "C1": (37, 6, 0), "C2": (31, 11.5, 0), "C3": (37, 11.5, 0),
-    "R1": (28, 17, 0), "C4": (28, 21, 0),
-    "SW1": (30, 27, 0), "SW2": (40, 27, 0), "SW3": (50, 27, 0), "J7": (57, 27, 0),
+    "R1": (30, 14.5, 0), "C4": (30, 19, 0),
+    "SW1": (34, 27, 0), "SW2": (44, 27, 0), "SW3": (54, 27, 0), "J7": (61, 27, 0),
     "U4": (53, 12, 0), "C5": (47, 6, 0), "C6": (59, 6, 0), "R3": (47, 17, 90),
-    "J5": (66, 25, 0), "TP1": (73, 27, 0), "TP2": (77, 27, 0),
+    "J5": (70, 25, 0), "TP1": (77, 27, 0), "TP2": (81, 27, 0),
     "U3": (84, 10, 90), "C7": (77, 5, 0),
     "RT1": (92, 4.5, 0), "R4": (96, 4.5, 0), "C8": (100, 4.5, 0),
     "J6": (91, 12, 0), "R8": (96, 9.5, 0),
     "J3": (98, 17, 0), "R5": (103, 9.5, 0),
     "J4": (91, 22, 0), "R6": (105, 4.5, 0), "R7": (109, 4.5, 0),
     "J1": (108, 29, 0), "U5": (98, 26, 0), "R9": (114, 22, 90), "R10": (117, 22, 90),
-    "J2": (122, 11, 0),
+    "J2": (125.5, 11.42, 0),
     "D1": (113, 4.5, 0), "R11": (117, 4.5, 0),
     "H1": (23.5, 3, 0), "H2": (21, 30, 0), "H3": (125, 3, 0), "H4": (125, 30, 0),
 }
@@ -308,7 +309,7 @@ for p in parts:
 PWR_FLAG_NETS = ["GND", "+5V"]
 
 BOARD_W, BOARD_H = 128.0, 33.0
-ANT_KEEPOUT_X = 5.3     # no copper / pour / parts left of this x (ESP32-S3-MINI-1 antenna end)
+ANT_KEEPOUT_X = 6.9     # no copper / pour / parts left of this x (ESP32-S3-MINI-1 antenna end)
 GND_POUR = [(ANT_KEEPOUT_X, 0.5), (BOARD_W - 0.5, 0.5), (BOARD_W - 0.5, BOARD_H - 0.5), (ANT_KEEPOUT_X, BOARD_H - 0.5)]
 
 
@@ -524,11 +525,11 @@ def write_pcb():
 
     text("DOTGLOW V1", 68, 17, 1.4)
     text("ElectroIoT.in", 68, 20, 1.0)
-    text("RST", 32, 31.2, 0.8)
-    text("BOOT", 40, 31.2, 0.8)
-    text("STOP", 48, 31.2, 0.8)
-    text("SW", 57.5, 31.8, 0.7)
-    text("SPK", 66, 31.5, 0.8)
+    text("RST", 34, 31.2, 0.8)
+    text("BOOT", 44, 31.2, 0.8)
+    text("STOP", 54, 31.2, 0.8)
+    text("SW", 61.5, 31.8, 0.7)
+    text("SPK", 70, 31.5, 0.8)
     text("DISPLAY", 118, 28.5, 0.8)
     text("ANT", 2.5, 3, 0.8)
 
