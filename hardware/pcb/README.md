@@ -36,7 +36,7 @@ Module: ESP32-S3-WROOM-1-N16R8 (LCSC C2913202). Connectors: JST XA (C265077 2-pi
 | `docs/pcb/pcb-3d-*.png` | 3D renders (top and bottom in blue, green, orange) and real 3D viewer angles |
 | [`docs/pcb/banner-pcb-v1.png`](../../docs/pcb/banner-pcb-v1.png) | banner for the website and social posts |
 
-**Short video** (schematic, PCB, 3D, every angle): made with HyperFrames, source in [`video/`](video/). Rebuild:
+**Short video** ([watch on YouTube](https://www.youtube.com/shorts/DH94otuCLPg): schematic, PCB, 3D, every angle): made with HyperFrames, source in [`video/`](video/). Rebuild:
 `python video/scripts/make_audio.py`, then `npx hyperframes render -o renders/dotglow-pcb-short.mp4` inside `video/`.
 
 ## Earlier KiCad draft

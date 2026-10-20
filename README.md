@@ -226,7 +226,7 @@ No app? The clock opens a WiFi hotspot **DotGlow-XXXX**; join it and the setup p
 
 A custom 128 x 31.1 mm PCB that stacks on the back of the 4-in-1 MAX7219 module: ESP32-S3, USB-C, I2S speaker amplifier,
 stopwatch / LDR / DHT22 connectors, and an I2C port for a clock chip. Schematic, Gerbers, BOM, 3D renders and the
-KiCad / EasyEDA files are in [`hardware/pcb/`](hardware/pcb/README.md). Untested V1.
+KiCad / EasyEDA files are in [`hardware/pcb/`](hardware/pcb/README.md). Untested V1. ▶ [Watch the PCB Short](https://www.youtube.com/shorts/DH94otuCLPg).
 
 
 ## Troubleshooting
