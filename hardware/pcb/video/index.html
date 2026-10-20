@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #07080c; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #07080c;
+              font-family: Inter, ui-sans-serif, system-ui, sans-serif; color: #fff; }
+      #bgdots { position: absolute; inset: 0; background: radial-gradient(rgba(255,59,59,.15) 2px, transparent 2.4px) 0 0/36px 36px; }
+      #vig { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, rgba(0,0,0,0) 35%, rgba(0,0,0,.8) 100%); }
+      .scene { position: absolute; inset: 0; opacity: 0; }
+      .tag { position: absolute; left: 60px; top: 150px; background: #ff3b3b; color: #fff; font-weight: 900; font-size: 40px;
+             letter-spacing: .12em; padding: 14px 36px; border-radius: 999px; box-shadow: 0 8px 34px rgba(255,59,59,.55); }
+      .cap { position: absolute; left: 60px; right: 60px; text-align: center; font-weight: 800; font-size: 60px; line-height: 1.12; letter-spacing: -.01em;
+             text-shadow: 0 6px 30px rgba(0,0,0,.8); }
+      .sub { position: absolute; left: 60px; right: 60px; text-align: center; font-weight: 600; font-size: 38px; color: #ffe08a; line-height: 1.25; }
+      .chips { position: absolute; left: 40px; right: 40px; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+      .chip { background: #1c2030; border: 2px solid #ff3b3b; color: #fff; font-weight: 800; font-size: 32px; padding: 10px 26px; border-radius: 999px; opacity: 0; }
+      .frame { position: absolute; overflow: hidden; border-radius: 18px; background: #000; border: 2px solid rgba(255,255,255,.18);
+               box-shadow: 0 30px 80px rgba(0,0,0,.7), 0 0 60px rgba(255,59,59,.18); }
+      .frame img { position: absolute; display: block; }
+      #dom { position: absolute; left: 0; right: 0; top: 1820px; text-align: center; color: rgba(255,255,255,.55); font-weight: 700; font-size: 30px; letter-spacing: .3em; }
+
+      #s0 .big { position: absolute; left: 40px; right: 40px; top: 700px; text-align: center; font-weight: 900; font-size: 150px; line-height: 1.0; letter-spacing: -.03em; }
+      #s0 .big span { color: #ff3b3b; }
+
+      #sch { left: 60px; top: 430px; width: 960px; height: 680px; }
+      #sch img { left: 0; top: 0; width: 3200px; height: 2267px; transform-origin: 0 0; }
+      #pcbA { left: 60px; top: 520px; width: 960px; height: 293px; }
+      #pcbA img { left: 0; top: 0; width: 960px; height: 293px; }
+      #pcbB { left: 60px; top: 880px; width: 960px; height: 241px; }
+      #pcbB img { left: 0; top: 0; width: 960px; height: 241px; }
+      #scan { position: absolute; top: 520px; left: 0; width: 8px; height: 293px; background: #fff; box-shadow: 0 0 30px 10px rgba(255,255,255,.7); opacity: 0; }
+
+      #persp { position: absolute; left: 0; top: 250px; width: 1080px; height: 1380px; perspective: 2200px; }
+      #spin { position: absolute; left: 50%; top: 0; width: 350px; height: 1380px; margin-left: -175px; transform-style: preserve-3d; }
+      .face { position: absolute; inset: 0; backface-visibility: hidden; background: #000; border-radius: 14px; overflow: hidden;
+              box-shadow: 0 0 0 3px rgba(255,255,255,.2), 0 0 80px rgba(255,59,59,.3); }
+      .face.back { transform: rotateY(180deg); }
+      .face img { position: absolute; left: 50%; top: 50%; width: 1380px; height: auto; transform: translate(-50%, -50%) rotate(90deg); }
+
+      #gal { left: 40px; top: 560px; width: 1000px; height: 620px; }
+      #gal img { left: 50%; top: 50%; width: 1420px; height: auto; opacity: 0; }
+      #dots { position: absolute; left: 0; right: 0; top: 1220px; display: flex; justify-content: center; gap: 18px; }
+      #dots i { width: 22px; height: 22px; border-radius: 50%; background: #3a3f52; }
+      .cc { position: absolute; left: 60px; width: 960px; height: 241px; }
+      .cc img { width: 960px; height: 241px; display: block; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,.7); }
+      #s6 .big { position: absolute; left: 40px; right: 40px; top: 560px; text-align: center; font-weight: 900; font-size: 120px; line-height: 1.02; letter-spacing: -.02em; }
+      #s6 .big span { color: #ff3b3b; }
+      #flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+      #fade { position: absolute; inset: 0; background: #000; opacity: 0; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="pcb-short" data-start="0" data-duration="34" data-width="1080" data-height="1920">
+      <div id="bgdots"></div>
+      <div id="vig"></div>
+
+      <div class="scene" id="s0">
+        <div class="tag" style="left:50%;margin-left:-250px;top:560px;width:500px;text-align:center">OPEN HARDWARE</div>
+        <div class="big">DotGlow<br><span>V1 Board</span></div>
+        <div class="sub" style="top:1100px">From schematic to PCB to 3D</div>
+      </div>
+
+      <div class="scene" id="s1">
+        <div class="tag">1 &nbsp;SCHEMATIC</div>
+        <div class="frame" id="sch"><img src="assets/img/schematic.jpg" alt="DotGlow V1 schematic" /></div>
+        <div class="cap" style="top:1190px">ESP32-S3, USB-C, amplifier, level shifter</div>
+        <div class="chips" style="top:1420px">
+          <span class="chip" id="c1a">0 ERC errors</span><span class="chip" id="c1b">22 BOM lines</span><span class="chip" id="c1c">16 test points</span>
+        </div>
+      </div>
+
+      <div class="scene" id="s2">
+        <div class="tag">2 &nbsp;PCB LAYOUT</div>
+        <div class="frame" id="pcbA"><img src="assets/img/layout2d.jpg" alt="PCB layout" /></div>
+        <div class="frame" id="pcbB"><img src="assets/img/bottom-orange.jpg" alt="PCB bottom" /></div>
+        <div id="scan"></div>
+        <div class="cap" style="top:1190px">128 x 31.1 mm, 2 layers</div>
+        <div class="chips" style="top:1340px">
+          <span class="chip" id="c2a">GND pour</span><span class="chip" id="c2b">Antenna keep-out</span><span class="chip" id="c2c">DRC: 0 errors</span><span class="chip" id="c2d">Gerbers ready</span>
+        </div>
+      </div>
+
+      <div class="scene" id="s3">
+        <div class="tag">3 &nbsp;3D MODEL</div>
+        <div id="persp"><div id="spin">
+          <div class="face front"><img src="assets/img/top-blue.jpg" alt="top" /></div>
+          <div class="face back"><img src="assets/img/bottom-blue.jpg" alt="bottom" /></div>
+        </div></div>
+        <div class="cap" style="top:1660px;font-size:54px">Top and bottom, every side</div>
+      </div>
+
+      <div class="scene" id="s4">
+        <div class="tag">3D VIEWER</div>
+        <div class="frame" id="gal">
+          <img src="assets/img/view-front.jpg" alt="front" />
+          <img src="assets/img/view-angle-1.jpg" alt="angle 1" />
+          <img src="assets/img/view-angle-2.jpg" alt="angle 2" />
+          <img src="assets/img/view-angle-3.jpg" alt="angle 3" />
+          <img src="assets/img/view-closeup.jpg" alt="closeup" />
+        </div>
+        <div id="dots"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="cap" style="top:1330px">Every angle, real parts</div>
+        <div class="sub" style="top:1500px">USB-C, JST XA connectors, ESP32-S3 module</div>
+      </div>
+
+      <div class="scene" id="s5">
+        <div class="tag">YOUR COLOUR</div>
+        <div class="cc" id="ccB" style="top:480px"><img src="assets/img/cc-blue.jpg" alt="blue" /></div>
+        <div class="cc" id="ccG" style="top:760px"><img src="assets/img/top-green.jpg" alt="green" /></div>
+        <div class="cc" id="ccO" style="top:1040px"><img src="assets/img/top-orange.jpg" alt="orange" /></div>
+        <div class="cap" style="top:1360px">Blue, green or orange mask</div>
+      </div>
+
+      <div class="scene" id="s6">
+        <div class="tag" style="left:50%;margin-left:-300px;top:380px;width:600px;text-align:center">OPEN SOURCE</div>
+        <div class="big">DotGlow<br><span>V1 Board</span></div>
+        <div class="chips" style="top:1000px">
+          <span class="chip" id="c6a" style="opacity:1">KiCad</span><span class="chip" id="c6b" style="opacity:1">EasyEDA</span><span class="chip" id="c6c" style="opacity:1">Gerber + BOM</span>
+        </div>
+        <div class="sub" style="top:1180px">github.com/ElectroIoT/DotGlow-ESP32</div>
+      </div>
+
+      <div id="dom">ELECTROIOT.IN</div>
+      <div id="flash"></div>
+      <div id="fade"></div>
+
+      <audio id="music" src="assets/audio/music.wav" data-start="0" data-duration="34" data-track-index="1" data-volume="0.55"></audio>
+      <audio id="w1" src="assets/audio/whoosh.wav" data-start="2.2" data-duration="0.7" data-track-index="2" data-volume="0.6"></audio>
+      <audio id="w2" src="assets/audio/whoosh.wav" data-start="7.2" data-duration="0.7" data-track-index="3" data-volume="0.6"></audio>
+      <audio id="w3" src="assets/audio/whoosh.wav" data-start="12.4" data-duration="0.7" data-track-index="4" data-volume="0.6"></audio>
+      <audio id="w4" src="assets/audio/whoosh.wav" data-start="19.2" data-duration="0.7" data-track-index="5" data-volume="0.6"></audio>
+      <audio id="w5" src="assets/audio/whoosh.wav" data-start="25.2" data-duration="0.7" data-track-index="6" data-volume="0.6"></audio>
+      <audio id="w6" src="assets/audio/whoosh.wav" data-start="29.0" data-duration="0.7" data-track-index="7" data-volume="0.6"></audio>
+      <audio id="d1" src="assets/audio/ding.wav" data-start="6.6" data-duration="0.9" data-track-index="8" data-volume="0.5"></audio>
+      <audio id="d2" src="assets/audio/ding.wav" data-start="11.8" data-duration="0.9" data-track-index="9" data-volume="0.5"></audio>
+      <audio id="d3" src="assets/audio/ding.wav" data-start="30.2" data-duration="0.9" data-track-index="10" data-volume="0.5"></audio>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      const show = (sel, t0, t1) => {
+        tl.fromTo(sel, { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, t0);
+        tl.to(sel, { opacity: 0, y: -30, duration: 0.4, ease: "power2.in" }, t1 - 0.4);
+      };
+      tl.fromTo("#bgdots", { opacity: 0 }, { opacity: 1, duration: 0.8 }, 0);
+
+      // 0 title
+      show("#s0", 0.1, 2.9);
+      tl.fromTo("#s0 .big", { scale: 0.85 }, { scale: 1, duration: 2.6, ease: "power1.out" }, 0.1);
+
+      // 1 schematic (2.5 - 7.6)
+      show("#s1", 2.5, 7.6);
+      tl.fromTo("#sch img", { x: 0, y: 0, scale: 0.3 }, { x: 0, y: 0, scale: 0.3, duration: 0.01 }, 2.5);
+      tl.to("#sch img", { scale: 0.62, x: -20, y: -10, duration: 1.6, ease: "power2.inOut" }, 3.0);
+      tl.to("#sch img", { scale: 0.62, x: -820, y: -40, duration: 1.4, ease: "power1.inOut" }, 4.7);
+      tl.to("#sch img", { scale: 0.3, x: 0, y: 0, duration: 1.0, ease: "power2.inOut" }, 6.2);
+      tl.to("#c1a", { opacity: 1, duration: 0.3 }, 3.6).to("#c1b", { opacity: 1, duration: 0.3 }, 4.0).to("#c1c", { opacity: 1, duration: 0.3 }, 4.4);
+
+      // 2 PCB layout (7.4 - 12.8)
+      show("#s2", 7.4, 12.8);
+      tl.fromTo("#pcbA img", { scale: 1.25, x: -60 }, { scale: 1, x: 0, duration: 2.2, ease: "power2.out" }, 7.5);
+      tl.fromTo("#pcbB", { x: 1100 }, { x: 0, duration: 0.7, ease: "power3.out" }, 8.4);
+      tl.fromTo("#scan", { opacity: 1, x: 60 }, { opacity: 1, x: 1010, duration: 1.5, ease: "none", immediateRender: false }, 8.0);
+      tl.to("#scan", { opacity: 0, duration: 0.1 }, 9.5);
+      tl.to("#c2a", { opacity: 1, duration: 0.3 }, 9.0).to("#c2b", { opacity: 1, duration: 0.3 }, 9.5)
+        .to("#c2c", { opacity: 1, duration: 0.3 }, 10.0).to("#c2d", { opacity: 1, duration: 0.3 }, 10.5);
+
+      // 3 turntable (12.6 - 19.8)
+      show("#s3", 12.6, 19.8);
+      tl.set("#spin", { rotationX: 10, rotationY: -40 }, 12.6);
+      tl.to("#spin", { rotationY: 320, duration: 6.4, ease: "power1.inOut" }, 13.0);
+      tl.to("#spin", { rotationX: -14, duration: 2.8, ease: "sine.inOut" }, 13.0);
+      tl.to("#spin", { rotationX: 12, duration: 3.2, ease: "sine.inOut" }, 15.8);
+
+      // 4 viewer gallery (19.4 - 25.8)
+      show("#s4", 19.4, 25.8);
+      const imgs = document.querySelectorAll("#gal img"), dots = document.querySelectorAll("#dots i");
+      gsap.set(imgs, { xPercent: -50, yPercent: -50 });
+      imgs.forEach((im, i) => {
+        const t0 = 19.9 + i * 1.1;
+        tl.fromTo(im, { opacity: 0, scale: 1.0 }, { opacity: 1, scale: 1.08, duration: 1.1, ease: "none" }, t0);
+        tl.to(im, { opacity: 0, duration: 0.2 }, t0 + 1.05);
+        tl.to(dots[i], { backgroundColor: "#ff3b3b", duration: 0.15 }, t0);
+      });
+
+      // 5 colours (25.4 - 29.6)
+      show("#s5", 25.4, 29.6);
+      tl.fromTo("#ccB", { x: -1100 }, { x: 0, duration: 0.6, ease: "power3.out" }, 25.8);
+      tl.fromTo("#ccG", { x: 1100 }, { x: 0, duration: 0.6, ease: "power3.out" }, 26.4);
+      tl.fromTo("#ccO", { x: -1100 }, { x: 0, duration: 0.6, ease: "power3.out" }, 27.0);
+
+      // 6 end card (29.2 - 34)
+      tl.fromTo("#s6", { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 29.2);
+      tl.fromTo("#s6 .big", { scale: 0.9 }, { scale: 1, duration: 3.5, ease: "power1.out" }, 29.2);
+
+      tl.fromTo("#flash", { opacity: 0 }, { opacity: 0.5, duration: 0.05, immediateRender: false }, 12.55);
+      tl.to("#flash", { opacity: 0, duration: 0.3 }, 12.62);
+      tl.to("#fade", { opacity: 1, duration: 1.2, ease: "power1.in" }, 32.8);
+      window.__timelines["pcb-short"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

@@ -9,7 +9,7 @@ Antenna at the top. Pin 1 is the top-left pin next to the antenna.
 | Pin | Name | Type | Functions (default first) | DotGlow V1 net / use |
 |---|---|---|---|---|
 | 1 | GND | P | ground | GND |
-| 2 | 3V3 | P | 3.3 V supply (3.0 to 3.6 V, at least 500 mA) | +3V3 from AP2112K |
+| 2 | 3V3 | P | 3.3 V supply (3.0 to 3.6 V, at least 500 mA) | +3V3 from the XC6220 regulator |
 | 3 | EN | I | chip enable (high = on). **Must not float** | EN: 10k to 3V3, 1 uF to GND, RESET button |
 | 4 | IO4 | I/O | GPIO4, TOUCH4, ADC1_CH3 | STOPWATCH (button SW3 and header J7) |
 | 5 | IO5 | I/O | GPIO5, TOUCH5, ADC1_CH4 | I2S_BCLK to MAX98357A |
@@ -66,7 +66,7 @@ GPIO26 to GPIO32 are not available on this module (they are used by the flash).
 - **EN**: 10k pull-up to 3V3, 1 uF to GND, and the RESET button to GND. Do not leave it floating.
 - **GPIO0 (pin 27)**: BOOT button to GND. Do not pull it low externally during normal start-up.
 - **Pins 1, 40 and 41**: all to GND, pin 41 (EPAD) with several vias to the ground plane.
-- **3V3 (pin 2)**: 22 uF + 100 nF close to the pin, regulator rated at least 500 mA (AP2112K-3.3 is 600 mA).
+- **3V3 (pin 2)**: 22 uF + 100 nF close to the pin, regulator rated at least 500 mA (XC6220B331MR-G is 1 A).
 - **Strapping pins** IO0, IO3, IO45, IO46: leave IO3, IO45, IO46 unconnected so their defaults apply.
 - **Antenna**: no copper, tracks, vias, speaker or metal under or near the antenna end (the top 6.5 mm of the module and a few mm beyond).
 - Placed with the antenna end hanging at the board edge, or inside the keep-out at the board edge.

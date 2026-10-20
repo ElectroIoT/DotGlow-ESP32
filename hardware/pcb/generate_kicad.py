@@ -221,9 +221,9 @@ part("R10", "Device:R", "5.1k", FP_R, {"1": "CC2", "2": "GND"}, (240, 30))
 part("U5", "Power_Protection:USBLC6-2SC6", "USBLC6-2SC6", "Package_TO_SOT_SMD:SOT-23-6",
      {"1": "USB_DP", "6": "USB_DP", "3": "USB_DN", "4": "USB_DN", "2": "GND", "5": "+5V"}, (265, 40), mpn="USBLC6-2SC6")
 
-# ---- 3.3 V regulator
-part("U2", "Regulator_Linear:AP2112K-3.3", "AP2112K-3.3", "Package_TO_SOT_SMD:SOT-23-5",
-     {"1": "+5V", "3": "+5V", "2": "GND", "5": "+3V3", "4": None}, (300, 40), mpn="AP2112K-3.3TRG1 (600 mA)")
+# ---- 3.3 V regulator (symbol AP2112K-3.3 has the same pins as the XC6220 in SOT-25: 1 VIN, 2 GND, 3 CE, 4 NC, 5 VOUT)
+part("U2", "Regulator_Linear:AP2112K-3.3", "XC6220B331MR-G", "Package_TO_SOT_SMD:SOT-23-5",
+     {"1": "+5V", "3": "+5V", "2": "GND", "5": "+3V3", "4": None}, (300, 40), mpn="XC6220B331MR-G (LCSC C86534), 1 A, pin-compatible with AP2112K-3.3 (C51118)")
 part("C1", "Device:C", "22uF 10V", FP_C_BIG, {"1": "+5V", "2": "GND"}, (330, 40), note="bulk on the 5 V rail")
 part("C2", "Device:C", "22uF 10V", FP_C_BIG, {"1": "+3V3", "2": "GND"}, (345, 40))
 part("C3", "Device:C", "100nF", FP_C, {"1": "+3V3", "2": "GND"}, (360, 40))

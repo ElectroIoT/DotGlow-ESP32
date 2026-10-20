@@ -7296,7 +7296,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "AP2112K-3.3"
+		(property "Value" "XC6220B331MR-G"
 			(at 302.26 45.72 0)
 			(effects
 				(font

@@ -220,6 +220,15 @@ No app? The clock opens a WiFi hotspot **DotGlow-XXXX**; join it and the setup p
 | **USB from the phone** | New or broken boards: *Install firmware* |
 | **Web upload** | *Upload firmware.bin* on the web page (password protected) |
 
+## Hardware: the DotGlow V1 board
+
+<p align="center"><a href="hardware/pcb/README.md"><img src="docs/pcb/banner-pcb-v1.png" alt="DotGlow V1 Board: ESP32-S3 + USB-C + speaker, 128 x 31.1 mm" width="860"></a></p>
+
+A custom 128 x 31.1 mm PCB that stacks on the back of the 4-in-1 MAX7219 module: ESP32-S3, USB-C, I2S speaker amplifier,
+stopwatch / LDR / DHT22 connectors, and an I2C port for a clock chip. Schematic, Gerbers, BOM, 3D renders and the
+KiCad / EasyEDA files are in [`hardware/pcb/`](hardware/pcb/README.md). Untested V1.
+
+
 ## Troubleshooting
 
 | Problem | Fix |

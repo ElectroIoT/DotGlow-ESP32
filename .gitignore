@@ -6,3 +6,6 @@ release/
 
 hardware/pcb/kicad/~*.lck
 hardware/pcb/kicad/.history/
+hardware/pcb/video/renders/
+hardware/pcb/video/assets/audio/*.wav
+hardware/pcb/video/node_modules/
