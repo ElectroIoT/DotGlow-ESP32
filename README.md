@@ -260,7 +260,7 @@ KiCad / EasyEDA files are in [`hardware/pcb/`](hardware/pcb/README.md). Untested
 
 | Phase | What | Status |
 |---|---|---|
-| 1 | ESP32 / ESP32-S3 port of the ESP8266 Matrix Clock | 🟡 runs on an ESP32-S3; test with a real display pending |
+| 1 | ESP32 / ESP32-S3 port of the ESP8266 Matrix Clock | ✅ working on an ESP32-S3 with the real MAX7219 display |
 | 2 | Bluetooth service + protocol | ✅ tested on a Motorola Edge 40 Neo (Android 15) |
 | 3 | Android app: pairing, dashboard | ✅ |
 | 4 | Android app: all settings, WiFi setup, app PIN lock, setup guide | ✅ |
