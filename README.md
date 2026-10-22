@@ -31,10 +31,24 @@ Details: [mtpcode.com/apps/dotglow.html](https://mtpcode.com/apps/dotglow.html) 
 
 ## Contents
 
-[Features](#features) · [How it works](#how-it-works) · [Parts](#parts) · [Wiring](#wiring) ·
+[Repository map](#repository-map) · [Features](#features) · [How it works](#how-it-works) · [Parts](#parts) · [Wiring](#wiring) ·
 [Install the firmware](#install-the-firmware) · [First setup](#first-setup) · [Using the clock](#using-the-clock) ·
 [Stopwatch](#stopwatch) · [Updates](#updates) · [Troubleshooting](#troubleshooting) · [For developers](#for-developers) ·
 [Roadmap](#roadmap) · [Credits](#credits)
+
+## Repository map
+
+| Folder | What is in it |
+|---|---|
+| [`src/`](src) | the firmware (C++, PlatformIO): display, clock, WiFi, web dashboard, Bluetooth |
+| [`platformio.ini`](platformio.ini) | build settings for ESP32, ESP32-S3 and test builds |
+| [`desktop-flasher/`](desktop-flasher) | a small Windows tool to flash a board over USB |
+| [`tools/`](tools) · [`release/`](release) | scripts that build the release images and the firmware list the app reads |
+| [`hardware/pcb/`](hardware/pcb/README.md) | the custom DotGlow V1 circuit board (schematic, Gerbers, [BOM](hardware/pcb/bom/README.md), 3D renders) |
+| [`hardware/enclosure/`](hardware/enclosure) | 3D-printable cases (STL + OpenSCAD) |
+| [`docs/`](docs/README.md) | architecture, Bluetooth protocol, development and release guides, pictures |
+
+Related repo: the Android app, [DotGlow-Android](https://github.com/ElectroIoT/DotGlow-Android).
 
 ## Features
 

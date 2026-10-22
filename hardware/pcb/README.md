@@ -17,7 +17,7 @@ display lines 0.25 mm), GND pour on both layers, antenna keep-out at the module 
 |---|---|
 | [`easyeda/dotglow-v1-schematic.pdf`](easyeda/dotglow-v1-schematic.pdf) | schematic (EasyEDA) |
 | [`easyeda/dotglow-v1-pcb.pdf`](easyeda/dotglow-v1-pcb.pdf) | PCB drawings, BOM pages |
-| [`easyeda/dotglow-v1-bom.xlsx`](easyeda/dotglow-v1-bom.xlsx) | BOM with LCSC part numbers |
+| [`bom/`](bom/README.md) ([xlsx](bom/dotglow-v1-bom.xlsx), [csv](bom/dotglow-v1-bom.csv)) | **bill of materials** with LCSC part numbers |
 | [`easyeda/dotglow-v1-gerber.zip`](easyeda/dotglow-v1-gerber.zip) | Gerbers + drill files, ready for JLCPCB |
 | [`ESP32-S3-WROOM-1-PINOUT.md`](ESP32-S3-WROOM-1-PINOUT.md) | module pinout and every connection |
 
