@@ -176,7 +176,9 @@ Open the **[DotGlow Web Flasher](https://electroiot.github.io/DotGlow-ESP32/)** 
 
 ### A2. From a PC (no phone, no PlatformIO)
 
-[desktop-flasher](desktop-flasher): a small program that finds the board, downloads the latest firmware and installs it
+Download `DotGlowFlasher.exe` from the
+[latest release](https://github.com/ElectroIoT/DotGlow-ESP32/releases/latest) (unsigned: Windows may warn or block it),
+or run it from source. [desktop-flasher](desktop-flasher): a small program that finds the board, downloads the latest firmware and installs it
 (window or command line, Windows / Linux / macOS). `python desktop-flasher/dotglow_flasher.py` or the `.exe`.
 
 ### B. PlatformIO
@@ -301,7 +303,7 @@ KiCad / EasyEDA files are in [`hardware/pcb/`](hardware/pcb/README.md). Untested
 | 5 | Firmware updates over Bluetooth | ✅ 1.2 MB in 26 s |
 | 6 | Flash a new board from the phone over USB-OTG (ESP32, ESP32-S3, ESP8266) | ✅ tested on an ESP32-S3 |
 | 6b | Stopwatch with an optional button | ✅ |
-| 6e | Speaker: alarms, countdown timer, stopwatch sounds | 🟡 in firmware 0.4.0 (not released yet) |
+| 6e | Speaker: alarms, countdown timer, stopwatch sounds | 🟡 released in firmware 0.4.0; the app screens come with app 1.1.0 |
 | 6c | 3D-printed case (OpenSCAD, parametric) | 🟡 designed, test print pending |
 | 6d | Temperature + humidity from a DHT22 (shown on the display and in the app); the case has a pocket for it | ⬜ planned |
 | 7 | Public release | ✅ app live on Google Play, firmware repo public |

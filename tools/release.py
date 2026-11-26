@@ -12,6 +12,7 @@ firmware.json lists the files under BASE_URL; upload release/<version>/ there an
 firmware.json one level up (tools/deploy is not included: copy them however you like).
 """
 import hashlib
+import importlib.util
 import json
 import os
 import re
@@ -30,6 +31,13 @@ ESP8266 = {
     'name': 'Matrix Clock for ESP8266',
     'repo': 'ElectroIoT/ESP8266-Matrix-Clock',
 }
+
+
+def esptool_cmd():
+    """The installed esptool package, else the copy PlatformIO already has."""
+    if importlib.util.find_spec('esptool'):
+        return [sys.executable, '-m', 'esptool']
+    return [sys.executable, os.path.join(PIO_HOME, 'packages', 'tool-esptoolpy', 'esptool.py')]
 
 
 def md5(path):
@@ -52,9 +60,9 @@ def main():
         full = os.path.join(out, f'dotglow-{chip}-full.bin')
         with open(os.path.join(build, 'firmware.bin'), 'rb') as f, open(app, 'wb') as g:
             g.write(f.read())
-        subprocess.check_call([
-            sys.executable, '-m', 'esptool', '--chip', chip, 'merge-bin', '-o', full,
-            '--flash-mode', 'dio', '--flash-freq', '80m' if chip == 'esp32s3' else '40m', '--flash-size', '4MB',
+        subprocess.check_call(esptool_cmd() + [
+            '--chip', chip, 'merge_bin', '-o', full,
+            '--flash_mode', 'dio', '--flash_freq', '80m' if chip == 'esp32s3' else '40m', '--flash_size', '4MB',
             hex(boot_at), os.path.join(build, 'bootloader.bin'),
             '0x8000', os.path.join(build, 'partitions.bin'),
             '0xe000', boot_app0,
