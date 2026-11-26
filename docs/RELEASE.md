@@ -26,6 +26,8 @@
    `python tools/make_web_flasher.py` (copies the full images + ESP8266 firmware into the mtpcode repo's
    `public/flash/` and rewrites the two manifests), then commit + push the mtpcode repo (GitHub Actions deploys it).
    The PC flasher (`desktop-flasher/`) reads `firmware.json` from step 4, so it needs no extra step.
+   The **GitHub Pages** flasher (https://electroiot.github.io/DotGlow-ESP32/) builds itself from the catalog of
+   step 4: run the *Web flasher* workflow (`gh workflow run web-flasher.yml`).
 7. Test: a clock on the previous version should offer the update (app *Updates*), and a fresh board should install
    from the app's *Install firmware*.
 

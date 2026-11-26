@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DotGlow Web Flasher: install firmware from your browser</title>
+  <meta name="description" content="Install DotGlow firmware on an ESP32, ESP32-S3 or ESP8266 board straight from Chrome or Edge. Nothing to download, no drivers to configure." />
+  <link rel="canonical" href="https://electroiot.github.io/DotGlow-ESP32/" />
+  <meta name="theme-color" content="#0c0e13" />
+  <link rel="icon" href="icon.png" type="image/png" />
+  <meta property="og:title" content="DotGlow Web Flasher" />
+  <meta property="og:description" content="Install DotGlow on an ESP32, ESP32-S3 or ESP8266 board from your browser. No download." />
+  <meta property="og:image" content="https://electroiot.github.io/DotGlow-ESP32/icon.png" />
+  <script type="module" src="https://unpkg.com/esp-web-tools@10.4.0/dist/web/install-button.js?module"></script>
+  <style>
+    :root { --bg:#0c0e13; --panel:#171a22; --panel2:#1f2330; --fg:#e9ebf1; --muted:#9aa1b0; --red:#ff3b3b; --good:#35d07f; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+    body::before { content:""; position:fixed; inset:0; z-index:-1;
+      background: radial-gradient(900px 500px at 85% -10%, rgba(255,59,59,.22), transparent 60%),
+                  radial-gradient(700px 500px at -10% 90%, rgba(255,59,59,.12), transparent 60%),
+                  radial-gradient(rgba(255,59,59,.10) 1.4px, transparent 1.6px) 0 0/18px 18px; }
+    main { max-width: 860px; margin: 0 auto; padding: 28px 16px 60px; }
+    a { color:#ff7a7a; }
+    .top { display:flex; align-items:center; gap:14px; margin-bottom:6px; }
+    .top img { width:56px; height:56px; border-radius:14px; box-shadow:0 0 28px rgba(255,59,59,.45); }
+    h1 { font-size: clamp(26px, 5vw, 38px); margin:0; line-height:1.15; }
+    .lead { color:var(--muted); margin:6px 0 22px; }
+    .warn { display:none; background:#3a1e22; border:1px solid #7a2a31; border-radius:14px; padding:14px 16px; margin-bottom:18px; }
+    .warn.show { display:block; }
+    .card { background:var(--panel); border:1px solid #262a38; border-radius:18px; padding:20px; margin:14px 0; }
+    .card h2 { margin:0 0 4px; font-size:20px; }
+    .tag { display:inline-block; font-size:12px; font-weight:700; letter-spacing:.06em; color:#fff; background:var(--red); border-radius:999px; padding:2px 10px; margin-right:8px; vertical-align:middle; }
+    .muted { color:var(--muted); }
+    .btn { background:var(--red); color:#fff; border:0; border-radius:12px; padding:14px 26px; font-size:17px; font-weight:700; cursor:pointer;
+           box-shadow:0 8px 24px rgba(255,59,59,.35); transition:transform .12s, filter .12s; }
+    .btn:hover { filter:brightness(1.1); transform:translateY(-1px); }
+    .row { display:flex; flex-wrap:wrap; gap:14px; align-items:center; margin-top:14px; }
+    ol.steps { counter-reset:s; list-style:none; padding:0; margin:0; }
+    ol.steps li { counter-increment:s; display:flex; gap:12px; padding:9px 0; border-top:1px solid #262a38; }
+    ol.steps li:first-child { border-top:0; }
+    ol.steps li::before { content:counter(s); flex:none; width:28px; height:28px; border-radius:50%; background:var(--panel2); color:var(--red); font-weight:800; display:grid; place-items:center; }
+    details { background:var(--panel); border:1px solid #262a38; border-radius:14px; padding:12px 16px; margin:8px 0; }
+    summary { cursor:pointer; font-weight:600; }
+    details ul { margin:8px 0 2px; padding-left:20px; }
+    code { background:var(--panel2); padding:1px 6px; border-radius:6px; font-size:.92em; }
+    footer { margin-top:30px; color:var(--muted); font-size:14px; }
+  </style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <img src="icon.png" alt="DotGlow" width="56" height="56" />
+    <h1>DotGlow Web Flasher</h1>
+  </div>
+  <p class="lead">Install DotGlow on your board straight from the browser. Nothing to download or install.</p>
+
+  <div id="nosupport" class="warn">
+    <strong>This browser can't flash boards.</strong> Open this page in <strong>Google Chrome</strong> or <strong>Microsoft Edge</strong>
+    on a Windows, Mac, Linux or Chromebook computer. Firefox, Safari and phone browsers don't support it.
+    On a phone, use the DotGlow app instead (Install firmware).
+  </div>
+
+  <div class="card">
+    <h2><span class="tag">ESP32</span>ESP32-S3 and ESP32 DevKit</h2>
+    <div class="muted">DotGlow with Bluetooth, set up and controlled from the Android app. <span id="v-dotglow"></span></div>
+    <div class="row">
+      <esp-web-install-button manifest="manifest-dotglow.json">
+        <button slot="activate" class="btn">Install DotGlow</button>
+        <span slot="unsupported" class="muted">Use Chrome or Edge on a computer.</span>
+        <span slot="not-allowed" class="muted">This page must be opened with https://.</span>
+      </esp-web-install-button>
+      <span class="muted">The chip (ESP32 or ESP32-S3) is detected for you.</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2><span class="tag">ESP8266</span>NodeMCU and Wemos D1 mini</h2>
+    <div class="muted">The Matrix Clock for ESP8266: WiFi clock set up from its own web page (no Bluetooth). <span id="v-esp8266"></span></div>
+    <div class="row">
+      <esp-web-install-button manifest="manifest-esp8266.json">
+        <button slot="activate" class="btn">Install Matrix Clock</button>
+        <span slot="unsupported" class="muted">Use Chrome or Edge on a computer.</span>
+        <span slot="not-allowed" class="muted">This page must be opened with https://.</span>
+      </esp-web-install-button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>How it works</h2>
+    <ol class="steps">
+      <li><div><strong>Plug the board into the computer</strong> with a USB <em>data</em> cable (some cables only charge).
+        Take the display's 5 V wire off the board while flashing.</div></li>
+      <li><div>Press <strong>Install</strong>, pick the board's port in the list (named <code>USB Serial</code>, <code>CH340</code>,
+        <code>CP210x</code> or <code>USB JTAG/serial</code>) and press <strong>Connect</strong>.</div></li>
+      <li><div>Choose <strong>Install</strong> again. It takes about a minute: <strong>don't unplug</strong> the board until it says it's done.
+        Tick <em>Erase device</em> only for a board that behaves strangely.</div></li>
+      <li><div>Open the <strong>DotGlow app</strong>, set up the clock's WiFi and enjoy. A new install shows a 6-digit pairing PIN on the display.</div></li>
+    </ol>
+  </div>
+
+  <h2 style="margin-top:26px">Problems?</h2>
+  <details><summary>No port in the list, or the board isn't found</summary>
+    <ul>
+      <li>Use a USB data cable and another USB port.</li>
+      <li>Boards with a CH340 or CP210x chip may need their USB driver (search for "CH340 driver" / "CP210x driver").</li>
+      <li>Hold the <strong>BOOT</strong> button while you plug the board in, then try again.</li>
+    </ul></details>
+  <details><summary>"Failed to initialize" or it stops half way</summary>
+    <ul>
+      <li>Take every wire off the board (especially the display's 5 V) and use a short, thick cable.</li>
+      <li>Hold <strong>BOOT</strong>, press <strong>RESET</strong> once, release <strong>BOOT</strong>, then press Install.</li>
+      <li>Close other programs that use the port (Arduino IDE, PlatformIO monitor).</li>
+    </ul></details>
+  <details><summary>Does this erase my WiFi settings?</summary>
+    <ul>
+      <li>Yes: a full install resets WiFi, pairing and settings. To <em>keep</em> them, update from the DotGlow app (Updates) or use the PC flasher's "keep settings" option.</li>
+    </ul></details>
+  <details><summary>Is it safe? What does it install?</summary>
+    <ul>
+      <li>The firmware files are on this website (<a href="manifest-dotglow.json">manifest</a>) and come from the open
+        <a href="https://github.com/ElectroIoT/DotGlow-ESP32">DotGlow firmware</a> project. Flashing happens in your browser; nothing is uploaded.</li>
+    </ul></details>
+
+  <footer>
+    <a href="https://play.google.com/store/apps/details?id=com.electroiot.dotglow">DotGlow app on Google Play</a> ·
+    <a href="https://mtpcode.com/apps/dotglow.html">Setup guide</a> ·
+    <a href="https://github.com/ElectroIoT/DotGlow-ESP32">Source code</a> ·
+    <a href="https://mtpcode.com/legal/dotglow/privacy.html">Privacy</a> · Built on <a href="https://esphome.github.io/esp-web-tools/">ESP Web Tools</a>
+  </footer>
+</main>
+<script>
+  if (!('serial' in navigator)) document.getElementById('nosupport').classList.add('show');
+  for (const [id, file] of [['v-dotglow', 'manifest-dotglow.json'], ['v-esp8266', 'manifest-esp8266.json']]) {
+    fetch(file).then(r => r.json()).then(m => { document.getElementById(id).textContent = 'Latest version ' + m.version + '.'; }).catch(() => {});
+  }
+</script>
+</body>
+</html>

@@ -40,6 +40,7 @@ feedback: admin@mtpcode.com
 | [`src/`](src) | the firmware (C++, PlatformIO): display, clock, WiFi, web dashboard, Bluetooth |
 | [`platformio.ini`](platformio.ini) | build settings for ESP32, ESP32-S3 and test builds |
 | [`desktop-flasher/`](desktop-flasher) | a small Windows tool to flash a board over USB |
+| [`web-flasher/`](web-flasher) | the browser flasher page, published to [GitHub Pages](https://electroiot.github.io/DotGlow-ESP32/) |
 | [`tools/`](tools) · [`release/`](release) | scripts that build the release images and the firmware list the app reads |
 | [`hardware/pcb/`](hardware/pcb/README.md) | the custom DotGlow V1 circuit board (schematic, Gerbers, [BOM](hardware/pcb/bom/README.md), 3D renders) |
 | [`hardware/enclosure/`](hardware/enclosure) | 3D-printable cases (STL + OpenSCAD) |
@@ -169,8 +170,9 @@ Above 4 modules feed 5 V to the boards directly (not through the ESP32), with a 
 
 ### A1. From your browser (nothing to install)
 
-Open **[mtpcode.com/flash](https://mtpcode.com/flash/)** in Chrome or Edge on a computer, plug the board in, press
-**Install**. ESP32, ESP32-S3 and ESP8266 (NodeMCU / D1 mini).
+Open the **[DotGlow Web Flasher](https://electroiot.github.io/DotGlow-ESP32/)** (also at
+[mtpcode.com/flash](https://mtpcode.com/flash/)) in Chrome or Edge on a computer, plug the board in, press
+**Install**. ESP32, ESP32-S3 and ESP8266 (NodeMCU / D1 mini). Its source is in [`web-flasher/`](web-flasher).
 
 ### A2. From a PC (no phone, no PlatformIO)
 
