@@ -20,6 +20,17 @@ struct Event {
 };
 static const int MAX_EVENTS = 8;
 
+// An alarm. used = 0: empty slot. days: bit 0 = Monday ... bit 6 = Sunday, 0 = ring once.
+struct Alarm {
+    uint8_t used;
+    uint8_t on;
+    uint8_t hour;           // 0..23
+    uint8_t minute;         // 0..59
+    uint8_t days;
+    uint8_t sound;          // SoundId
+};
+static const int MAX_ALARMS = 6;
+
 struct Settings {
     uint32_t magic;
     char     ssid[33];
@@ -55,6 +66,12 @@ struct Settings {
     uint8_t  flipH;         // mirror left-right
     uint8_t  flipV;         // flip top-bottom (both flips = upside down)
     uint8_t  showSecs;      // show :SS when the display is wide enough
+    // version 2
+    uint8_t  volume;        // speaker volume 0..10, 0 = mute
+    uint8_t  timerSound;    // SoundId played when the countdown ends
+    uint8_t  swSound;       // SwSound: stopwatch start / pause / reset cues
+    uint8_t  snoozeMin;     // 1..30
+    Alarm    alarms[MAX_ALARMS];
 };
 
 extern Settings cfg;

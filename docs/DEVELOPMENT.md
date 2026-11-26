@@ -31,6 +31,12 @@ python -m platformio run -e esp32s3 -e esp32dev          # both release builds
 - Recover a board stuck in download mode: `python -m esptool --port COM5 --after hard-reset chip-id`.
 - Only one program can hold COM5: stop any serial logger before `pio ... -t upload`.
 
+## Driving a test build over USB
+
+The `*_test` builds also run API ops typed on the serial port, so sounds, alarms and the timer can be tested without
+a phone: `sound a=play n=2`, `timer a=start s=10`, `alarm/set h=7 m=30 d=0 s=4`, `status`, `config`.
+`settime t=<unix seconds>` sets the clock so alarms can be tested without WiFi. Values cannot contain spaces.
+
 ## Pairing without a display
 
 Flash `esp32s3_test`, watch serial for `BLE: pairing PIN nnnnnn (test build)` and type it into Android's

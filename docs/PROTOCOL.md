@@ -61,13 +61,42 @@ Requests are handled one at a time in the clock's main loop. Slow operations (`s
 | `modules` | | show each module's number |
 | `show` | | scroll the IP address |
 | `sync` | | re-sync the time |
+| `alarm/set` | `i`?, `h`, `m`, `d`, `s`, `on`? | add (no `i` or `-1`) or change an alarm; see *Alarms, timer and sounds* |
+| `alarm/del` | `i` | delete an alarm |
+| `alarm` | `a`: `stop` / `snooze` | answer a ringing alarm -> `{"ring","i","h","m","snooze"}` |
+| `timer` | `a`, `s`? | countdown -> `{"on","run","ring","ms","total"}` |
+| `sound` | `a`: `play` / `stop`, `n` or `sw` | preview a sound on the clock's speaker |
 | `ota/check`, `ota/install` | | look for / install a GitHub release |
 | `restart`, `factory` | | restart / reset all settings (also forgets paired phones) |
 | `phones/forget` | | remove all paired phones (disconnects) |
 
 **Setting keys for `set`:** `br`, `autoDim`, `nightFrom`, `nightTo`, `nightBr`, `fmt24`, `leadingZero`,
 `blinkColon`, `secondsBar`, `showDate`, `autoUpdate`, `roll`, `hourlyAnim`, `bootAnim`, `tz`, `ldrOn`,
-`ldrMin`, `ldrMax`, `ldrInvert`, `modules`, `hwType`, `flipH`, `flipV`, `showSecs`.
+`ldrMin`, `ldrMax`, `ldrInvert`, `modules`, `hwType`, `flipH`, `flipV`, `showSecs`, and from firmware 0.4.0
+`vol` (0-10), `tmrSound`, `swSound`, `snooze` (1-30 minutes).
+
+## Alarms, timer and sounds (firmware 0.4.0+)
+
+`config` also reports `"sounds"` (names, the index is the sound number), `"swSounds"` (stopwatch styles, index 0 =
+off), `"maxAlarms"` and `"alarms"`. **An app shows these features only when `sounds` is present**, and builds its
+lists from the names, so new sounds need no app update.
+
+An alarm is `{"i","h","m","d","s","on"}`: slot, hour, minute, days (bit 0 = Monday ... bit 6 = Sunday, `0` = ring
+once, after which it switches itself off), sound, enabled. A ringing alarm gets louder over 20 s and stops by itself
+after 3 minutes. `snooze` rings again after `snooze` minutes.
+
+`status` carries `"alarm": {"ring","i","h","m","snooze"}` (`i` = -1 when nothing rings or is snoozed, `snooze` =
+seconds until it rings again) and `"tmr": {"on","run","ring","ms","total"}` (`ms` left, `total` seconds).
+
+`timer` actions: `set` (with `s`, 1 to 359999 seconds: show it, not started), `start`, `pause`, `toggle`, `reset`,
+`open`, `exit`, `stop` (end the ringing). `s` may also come with `start`. The countdown and the stopwatch share the
+display: opening one closes the other. A finished countdown rings for 60 s.
+
+`sound` with `n` plays that alarm sound once; with `sw` it plays the start, pause and reset cues of a stopwatch
+style. It answers 400 while something is ringing or when the volume is 0.
+
+**On the clock:** while ringing, a tap on the stopwatch button or BOOT snoozes an alarm and holding it stops it;
+either ends a finished countdown.
 
 ## Versioning
 

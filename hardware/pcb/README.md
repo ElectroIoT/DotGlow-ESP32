@@ -65,7 +65,7 @@ No RTC chip in V1: the time comes from NTP over WiFi and from the phone over Blu
 | 1 | LDR_ADC | `PIN_LDR` (optional LDR) |
 | 2 | NTC_ADC | NTC thermistor divider (new, needs firmware) |
 | 4 | STOPWATCH | `PIN_STOPWATCH` |
-| 5 / 6 / 7 | I2S_BCLK / I2S_LRC / I2S_DIN | MAX98357A (new, needs firmware) |
+| 5 / 6 / 7 | I2S_BCLK / I2S_LRC / I2S_DIN | MAX98357A (firmware 0.4.0+) |
 | 8 / 9 | I2C_SDA / I2C_SCL | header for RTC / sensors |
 | 10 / 11 / 12 | CS / MOSI(DIN) / CLK | `PIN_CS` and the S3 default SPI pins, through the 74AHCT125 |
 | 13 | DHT_DATA | optional DHT22 |

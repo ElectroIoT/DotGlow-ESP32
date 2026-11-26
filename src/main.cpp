@@ -10,9 +10,15 @@
 #include <ESPmDNS.h>
 #include <esp_random.h>
 #include <time.h>
+#include <sys/time.h>
 
+#include "alarm.h"
+#include "api.h"
 #include "app.h"
 #include "ble.h"
+#include "button.h"
+#include "countdown.h"
+#include "sound.h"
 #include "stopwatch.h"
 #include "config.h"
 #include "display.h"
@@ -33,6 +39,12 @@ uint8_t  otaRequest = OTA_NONE;
 static bool      mdnsOn = false;
 static uint8_t   appliedBr = 255;   // brightness currently on the display, 16 = switched off
 static ClockFace face;
+static Button    sideButton(PIN_STOPWATCH);   // the optional button
+static Button    bootRing(PIN_BUTTON);        // BOOT, while an alarm or countdown rings
+
+static bool ringing() {
+    return alarmRinging() || countdownRinging();
+}
 
 // =================================================================================
 // Helpers shared with the web handlers (app.h)
@@ -90,13 +102,15 @@ uint8_t brightnessNow() {
 void applyBrightness(bool force) {
     uint8_t want = cfg.brightness;
     bool night = false;
-    if (cfg.autoDim && timeValid()) {
+    if (!ringing() && cfg.autoDim && timeValid()) {
         time_t now = time(nullptr);
         struct tm t;
         localtime_r(&now, &t);
         night = inNight(t.tm_hour);
     }
-    if (night) {
+    if (ringing()) {
+        want = max<uint8_t>(cfg.brightness, 8);   // a ringing clock must be visible
+    } else if (night) {
         want = cfg.nightBr;   // night mode wins over the light sensor
     } else if (cfg.ldrOn && lightLevel >= 0) {
         float exact = cfg.ldrMin + (cfg.ldrMax - cfg.ldrMin) * lightLevel / 1023.0f;
@@ -152,9 +166,16 @@ static void runOta() {
 // Background work that must keep running, even during blocking animations
 // =================================================================================
 
+#ifdef PIN_TO_SERIAL
+static void serialOps();
+#endif
+
 static void service() {
     webLoop();
     bleLoop();
+#ifdef PIN_TO_SERIAL
+    serialOps();
+#endif
     if (restartAt && (int32_t)(millis() - restartAt) >= 0) restart();
 }
 
@@ -164,6 +185,26 @@ void serviceWait(uint32_t ms) {
         service();
         delay(1);
     } while (millis() - start < ms);
+}
+
+// Ringing: a tap snoozes the alarm, a hold stops it; either ends a finished countdown.
+static void ringButton(bool hold) {
+    if (alarmRinging()) {
+        if (hold) alarmStop();
+        else      alarmSnooze();
+    } else {
+        countdownClose();
+    }
+}
+
+// The optional button acts on whatever is showing: ringing, countdown, else the stopwatch.
+static void handleSideButton() {
+    const Button::Event e = sideButton.poll();
+    if (!e) return;
+    const bool hold = e == Button::HOLD;
+    if (ringing()) ringButton(hold);
+    else if (countdownOn()) countdownButton(hold);
+    else stopwatchButton(hold);
 }
 
 // BOOT button, acted on when released:
@@ -177,6 +218,17 @@ static bool handleButton() {
     static uint32_t downAt = 0;
     static uint32_t tapAt = 0;   // a short press waiting to see if a second one follows
     bool down = digitalRead(PIN_BUTTON) == LOW;
+
+    // While something rings, BOOT only snoozes / stops it, and that whole press is used up:
+    // holding on must not go on to reset WiFi or the password.
+    static bool swallow = false;
+    const Button::Event e = bootRing.poll();
+    if (ringing() || swallow) {
+        if (ringing() && e) ringButton(e == Button::HOLD);
+        swallow = down;
+        downAt = tapAt = 0;
+        return false;
+    }
 
     if (tapAt && !down && millis() - tapAt >= DOUBLE_PRESS_MS) {   // it stayed a single press
         tapAt = 0;
@@ -224,6 +276,45 @@ static bool handleButton() {
     fbShow();
     return false;
 }
+
+#ifdef PIN_TO_SERIAL
+// Test builds only: run an API op typed on the serial port, e.g.  sound a=play n=3
+// "settime t=<unix seconds>" sets the clock, to test alarms without WiFi.
+static void serialOps() {
+    static String line;
+    while (Serial.available()) {
+        const char c = Serial.read();
+        if (c != '\n' && c != '\r') {
+            if (line.length() < 200) line += c;
+            continue;
+        }
+        if (!line.length()) continue;
+        const int sp = line.indexOf(' ');
+        const String op = sp < 0 ? line : line.substring(0, sp);
+        const String rest = sp < 0 ? String() : line.substring(sp) + " ";
+        auto find = [&rest](const char* k) { return rest.indexOf(String(" ") + k + "="); };
+        ApiArgs args;
+        args.has = [&](const char* k) { return find(k) >= 0; };
+        args.get = [&](const char* k) {
+            const int at = find(k);
+            if (at < 0) return String();
+            const int from = at + strlen(k) + 2;
+            return rest.substring(from, rest.indexOf(' ', from));
+        };
+        if (op == "settime") {
+            const timeval tv = {(time_t)args.get("t").toInt(), 0};
+            settimeofday(&tv, nullptr);
+            setenv("TZ", cfg.tz, 1);
+            tzset();
+            Serial.println(F("> 200 time set"));
+        } else {
+            const ApiResult r = apiCall(op, args, true);
+            Serial.printf("> %d %s\n", r.code, r.body.c_str());
+        }
+        line = "";
+    }
+}
+#endif
 
 // =================================================================================
 // WiFi
@@ -445,7 +536,7 @@ void setup() {
     bool safe = safeModeCheck();
     Serial.printf("Firmware %u bytes, %u bytes free for updates\n", ESP.getSketchSize(), ESP.getFreeSketchSpace());
     pinMode(PIN_BUTTON, INPUT_PULLUP);
-    stopwatchBegin();
+    sideButton.begin();
     randomSeed(esp_random());
 
     settingsLoad();   // first: module count, type and orientation are settings
@@ -466,6 +557,7 @@ void setup() {
         return;
     }
 
+    soundBegin();   // not in safe mode: it runs as little as possible
     if (cfg.bootAnim) playAnim(cfg.bootAnim);
     scrollText(WELCOME_TEXT);
 
@@ -497,6 +589,11 @@ void loop() {
 
     service();
     readLight();
+    if (appMode != MODE_SAFE) {
+        alarmLoop();
+        countdownTick();
+    }
+    handleSideButton();
     if (handleButton()) return;   // button hint on screen
     uint32_t pk;
     if (blePasskey(pk)) {         // a phone is pairing: show its PIN
@@ -508,6 +605,11 @@ void loop() {
         drawProgress(pct);
         return;
     }
+    if (alarmRinging()) {
+        alarmFrame();
+        return;
+    }
+    if (countdownLoop()) return;  // the countdown is showing
     if (stopwatchLoop()) return;  // the stopwatch is showing
     if      (appMode == MODE_SETUP) setupLoop();
     else if (appMode == MODE_SAFE)  safeLoop();

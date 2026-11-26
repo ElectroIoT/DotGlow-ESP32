@@ -17,7 +17,11 @@ Clean-room code: nothing is copied from other clock projects. Only open-source l
 | `ble.h/.cpp` | NimBLE GATT service (see `docs/PROTOCOL.md`), pairing PIN, request queue, OTA characteristic, stale-link cleanup |
 | `ota.h/.cpp` | GitHub releases: `version.txt` + `firmware-<chip>.bin`, `WiFiClientSecure` with `github_roots.h` CAs |
 | `safemode.h/.cpp` | Crash counter in `RTC_NOINIT` memory + `esp_reset_reason()`; restart-to-update flag |
-| `stopwatch.h/.cpp` | Stopwatch state, optional button (`PIN_STOPWATCH`), `stopwatch` op |
+| `stopwatch.h/.cpp` | Stopwatch state and its button behaviour, `stopwatch` op |
+| `countdown.h/.cpp` | Countdown timer, rings at zero, `timer` op |
+| `alarm.h/.cpp` | Alarms from settings, snooze, ringing screen, `alarm` ops |
+| `sound.h/.cpp` | MAX98357A speaker: note-list sounds synthesised by a FreeRTOS task over I2S |
+| `button.h` | Debounced tap / hold reader for the stopwatch and BOOT buttons |
 | `private_config.h` | Gitignored: `UPDATE_PASS_SHA256` for the web upload (`private_config.example.h` is the template) |
 
 ## Boot and modes
@@ -28,10 +32,14 @@ setup(): safeModeCheck -> settingsLoad -> displayBegin -> WiFi.mode(STA) -> webB
          no WiFi / connect fails -> MODE_SETUP (hotspot DotGlow-XXXX + captive portal)
          else   -> MODE_CLOCK (NTP, mDNS dotglow.local, scroll IP)
 loop():  service()            webLoop + bleLoop + scheduled restart
+         alarmLoop() / countdownTick()   start and end ringing (not in safe mode)
+         handleSideButton()   ringing, countdown or stopwatch
          handleButton()       BOOT button hints
          blePasskey -> drawPasskey        (pairing PIN wins the display)
          bleUpdateProgress -> drawProgress
-         stopwatchLoop()      (owns the display while on)
+         alarmFrame()         (while an alarm rings)
+        countdownLoop()      (owns the display while on)
+        stopwatchLoop()      (owns the display while on)
          setupLoop / safeLoop / clockLoop
 ```
 
@@ -45,6 +53,12 @@ Animations are blocking but call `serviceWait()`, which keeps web + BLE responsi
 
 The one exception is the BLE OTA data: `OtaCallbacks::onWrite` writes straight to `Update` in the host task; the
 link layer throttles the phone while flash is busy.
+
+## Sound
+
+`soundPlay()` and friends only post a request; the `sound` task renders the notes (sine, soft square, bell, wood)
+into the I2S DMA buffers and switches the amplifier off when idle. A newer request cuts the current one within one
+256-sample block. Sounds are note lists in `sound.cpp`; **append** new ids, they are stored in settings.
 
 ## Settings
 

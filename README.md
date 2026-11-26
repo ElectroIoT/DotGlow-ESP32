@@ -30,7 +30,7 @@ feedback: admin@mtpcode.com
 
 [Repository map](#repository-map) · [Features](#features) · [How it works](#how-it-works) · [Parts](#parts) · [Wiring](#wiring) ·
 [Install the firmware](#install-the-firmware) · [First setup](#first-setup) · [Using the clock](#using-the-clock) ·
-[Stopwatch](#stopwatch) · [Updates](#updates) · [Troubleshooting](#troubleshooting) · [For developers](#for-developers) ·
+[Stopwatch](#stopwatch) · [Alarms and sounds](#alarms-timer-and-sounds) · [Updates](#updates) · [Troubleshooting](#troubleshooting) · [For developers](#for-developers) ·
 [Roadmap](#roadmap) · [Credits](#credits)
 
 ## Repository map
@@ -57,7 +57,8 @@ Related repo: the Android app, [DotGlow-Android](https://github.com/ElectroIoT/D
 | 🕒 **Internet time** | NTP with time zones and daylight saving, 12 / 24 hour, leading zero, blinking colon, seconds bar, date |
 | ✨ **Animations** | 6 digit-change styles, 5 effects (hourly and at power-on), scrolling messages, special days (birthdays...) |
 | 🌙 **Brightness** | Manual, night mode with its own brightness (or display off), optional light sensor (LDR) |
-| ⏱️ **Stopwatch** | From the app or with an optional push button |
+| ⏱️ **Stopwatch** | From the app or with an optional push button, with start / pause / reset sounds |
+| ⏰ **Alarms and timer** | 6 alarms with weekdays and snooze, a countdown timer, 10 sounds on an optional speaker (firmware 0.4.0+) |
 | 🔄 **Rotate 180°** | Mounted upside down? One tap in the app, or double-press BOOT |
 | 🧱 **4 to 16 modules** | 8x32 up to 8x128, any module type (FC-16, generic, Parola, IC-Station), mirror / flip |
 | ⬆️ **Updates** | From GitHub over WiFi, from the app over Bluetooth, or a new board straight from the phone over USB |
@@ -101,6 +102,7 @@ All pictures are generated from the firmware's own fonts and frame logic (`tools
 | 470-1000 µF capacitor | Across VCC / GND at the display (+ leg to VCC). Strongly recommended |
 | *Optional:* LDR + 10 kΩ resistor | Automatic brightness |
 | *Optional:* push button | [Stopwatch](#stopwatch) without the phone |
+| *Optional:* MAX98357A I2S amplifier + 8 Ω speaker | [Alarm, timer and stopwatch sounds](#alarms-timer-and-sounds) (on the DotGlow V1 board already) |
 | *Optional:* 3D-printed case | [hardware/enclosure](hardware/enclosure): leaning desk case, smoked acrylic front, DC jack; STLs for ESP32-S3, ESP32 DevKit, NodeMCU, D1 mini |
 
 <p align="center"><a href="hardware/enclosure"><img src="hardware/enclosure/images/case-front.png" alt="DotGlow 3D-printed case" width="560"></a></p>
@@ -122,6 +124,10 @@ Using an ESP8266 / NodeMCU instead? That is the [ESP8266 Matrix Clock](https://g
 | CLK | GPIO12 | GPIO18 |
 | *LDR (optional)* | GPIO1 | GPIO34 |
 | *Stopwatch button (optional)* | GPIO4 | GPIO13 |
+| *Speaker amp BCLK (optional)* | GPIO5 | GPIO26 |
+| *Speaker amp LRC (optional)* | GPIO6 | GPIO25 |
+| *Speaker amp DIN (optional)* | GPIO7 | GPIO22 |
+| *Speaker amp SD (optional)* | GPIO15 | GPIO21 |
 
 **Light sensor:** LDR from 3V3 to the LDR pin, 10 kΩ from that pin to GND, then turn on *Auto brightness*.
 
@@ -222,6 +228,21 @@ No app? The clock opens a WiFi hotspot **DotGlow-XXXX**; join it and the setup p
   tap = start / pause (from the clock: open the stopwatch), hold = reset, hold at 0 = back to the clock.
 - With 6 or more modules it shows `HH:MM:SS` all the time.
 
+## Alarms, timer and sounds
+
+From firmware 0.4.0, with a MAX98357A amplifier (powered from 5 V) and a speaker. Without them everything still works,
+silently, and the display shows the ringing.
+
+| | |
+|---|---|
+| **Alarms** | Up to 6, on chosen weekdays or once. Each has its own sound, gets louder over 20 s, snoozes |
+| **Timer** | A countdown from 1 second to 99 hours; the bottom row shrinks as it runs |
+| **Stopwatch sounds** | Beep, Click, Arcade or Whistle for start, pause and reset |
+| **Sounds** | Beep, Digital watch, Door chime, Bell, Sunrise, Marimba, Birds, Arcade, Siren, Soft pulse |
+| **On the clock** | While ringing: tap the stopwatch button or BOOT to snooze, hold to stop |
+
+Alarms need the time, so the clock must have reached WiFi once since it was powered on.
+
 ## Updates
 
 | How | When to use |
@@ -278,6 +299,7 @@ KiCad / EasyEDA files are in [`hardware/pcb/`](hardware/pcb/README.md). Untested
 | 5 | Firmware updates over Bluetooth | ✅ 1.2 MB in 26 s |
 | 6 | Flash a new board from the phone over USB-OTG (ESP32, ESP32-S3, ESP8266) | ✅ tested on an ESP32-S3 |
 | 6b | Stopwatch with an optional button | ✅ |
+| 6e | Speaker: alarms, countdown timer, stopwatch sounds | 🟡 in firmware 0.4.0 (not released yet) |
 | 6c | 3D-printed case (OpenSCAD, parametric) | 🟡 designed, test print pending |
 | 6d | Temperature + humidity from a DHT22 (shown on the display and in the app); the case has a pocket for it | ⬜ planned |
 | 7 | Public release | ✅ app live on Google Play, firmware repo public |

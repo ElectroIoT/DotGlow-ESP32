@@ -16,6 +16,9 @@ void displayBegin();                    // after settingsLoad(): module count / 
 void showModuleNumbers();
 void drawPasskey(uint32_t pk);           // 6-digit Bluetooth pairing PIN, centred (one frame)               // numbers each 8x8 module, to check the chain order
 void drawStopwatch(uint32_t ms, bool running);   // stopwatch face (one frame)
+void drawCountdown(uint32_t ms, uint32_t totalMs, bool running);   // countdown face (one frame)
+void drawTimerEnd(uint32_t age);                 // countdown finished: flashing zeros and bells
+void drawAlarm(const struct tm& t, uint32_t age);   // alarm ringing: the time and bells
 void drawProgress(uint8_t percent);      // update progress: percentage + bar (one frame)
 void displayIntensity(uint8_t level);   // 0..15
 void displayPower(bool on);

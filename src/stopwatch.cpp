@@ -1,14 +1,15 @@
 #include "stopwatch.h"
 #include "config.h"
+#include "countdown.h"
 #include "display.h"
+#include "settings.h"
+#include "sound.h"
 
-// Stopwatch: an optional push button from PIN_STOPWATCH to GND (internal pull-up, so with
-// nothing connected the pin simply never reads "pressed"), and the app / web API.
+// Stopwatch, driven by the app / web API and the optional push button:
 //
 //   tap  -> clock showing: open the stopwatch and start; stopwatch showing: start / pause
 //   hold -> running or paused with time: reset to 0;  already at 0: back to the clock
 
-static const uint32_t HOLD_MS = 1200;
 static const uint32_t IDLE_EXIT_MS = 30UL * 60 * 1000;   // paused this long: back to the clock
 
 static bool     active  = false;
@@ -19,21 +20,51 @@ static uint32_t idleSince = 0;
 
 uint32_t stopwatchMs() { return stored + (running ? millis() - startedAt : 0); }
 
-static void swStart()  { if (!running) { running = true; startedAt = millis(); } }
-static void swPause()  { if (running) { stored = stopwatchMs(); running = false; idleSince = millis(); } }
-static void swReset()  { running = false; stored = 0; idleSince = millis(); }
-static void swOpen()   { active = true; swReset(); }
-static void swClose()  { active = false; swReset(); }
+static void swStart() {
+    if (running) return;
+    running = true;
+    startedAt = millis();
+    soundCue(cfg.swSound, CUE_START);
+}
+
+static void swPause() {
+    if (!running) return;
+    stored = stopwatchMs();
+    running = false;
+    idleSince = millis();
+    soundCue(cfg.swSound, CUE_PAUSE);
+}
+
+static void swReset() { running = false; stored = 0; idleSince = millis(); }
+
+static void swOpen() {
+    countdownClose();   // one of the two at a time on the display
+    active = true;
+    swReset();
+}
+
+static void swClose() { active = false; swReset(); }
+
+static void swResetCued() {
+    if (running || stored) soundCue(cfg.swSound, CUE_RESET);
+    swReset();
+}
 
 bool stopwatchCommand(const String& action) {
     if      (action == "start")  { if (!active) swOpen(); swStart(); }
     else if (action == "pause")  swPause();
     else if (action == "toggle") { if (!active) { swOpen(); swStart(); } else if (running) swPause(); else swStart(); }
-    else if (action == "reset")  { if (!active) swOpen(); swReset(); }
+    else if (action == "reset")  { if (!active) swOpen(); swResetCued(); }
     else if (action == "open")   { if (!active) swOpen(); }
     else if (action == "exit")   swClose();
     else return false;
     return true;
+}
+
+void stopwatchButton(bool hold) {
+    if (!hold || !active) stopwatchCommand("toggle");
+    else if (running || stored) swResetCued();
+    else swClose();
 }
 
 String stopwatchJson() {
@@ -41,32 +72,7 @@ String stopwatchJson() {
            ",\"ms\":" + stopwatchMs() + "}";
 }
 
-void stopwatchBegin() {
-    pinMode(PIN_STOPWATCH, INPUT_PULLUP);
-}
-
-static void readButton() {
-    static bool     down = false, holdDone = false;
-    static uint32_t downAt = 0, changedAt = 0;
-    bool pressed = digitalRead(PIN_STOPWATCH) == LOW;
-    if (pressed != down && millis() - changedAt > 30) {   // 30 ms debounce
-        changedAt = millis();
-        down = pressed;
-        if (down) {
-            downAt = millis();
-            holdDone = false;
-        } else if (!holdDone) {
-            stopwatchCommand("toggle");   // a tap
-        }
-    }
-    if (down && !holdDone && millis() - downAt >= HOLD_MS && active) {
-        holdDone = true;
-        if (running || stored) swReset(); else swClose();
-    }
-}
-
 bool stopwatchLoop() {
-    readButton();
     if (!active) return false;
     if (!running && millis() - idleSince > IDLE_EXIT_MS) { swClose(); return false; }
     static uint32_t lastFrame = 0;

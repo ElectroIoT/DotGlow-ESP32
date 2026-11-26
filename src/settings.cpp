@@ -1,16 +1,25 @@
 #include "settings.h"
 #include "config.h"
+#include "sound.h"
 #include <Preferences.h>
 
 // Stored as one blob in NVS. Changing the layout: append fields at the end of Settings,
 // bump SETTINGS_VER and give the new fields defaults in settingsLoad(), like the other
 // versioned blocks there. A different MAGIC wipes everything back to defaults.
 static const uint32_t MAGIC = 0x44474C31;   // "DGL1"
-static const uint8_t  SETTINGS_VER = 1;
+static const uint8_t  SETTINGS_VER = 2;
 static const char*    NS = "dotglow";
 static const char*    KEY = "cfg";
 
 Settings cfg;
+
+static void soundDefaults() {
+    cfg.volume     = DEF_VOLUME;
+    cfg.timerSound = SND_DIGITAL;
+    cfg.swSound    = SWS_BEEP;
+    cfg.snoozeMin  = DEF_SNOOZE_MIN;
+    memset(cfg.alarms, 0, sizeof(cfg.alarms));
+}
 
 void settingsDefaults() {
     memset(&cfg, 0, sizeof(cfg));
@@ -33,6 +42,7 @@ void settingsDefaults() {
     cfg.flipV       = FLIP_VERTICAL;
     cfg.showSecs    = 1;
     strlcpy(cfg.tz, DEF_TZ, sizeof(cfg.tz));
+    soundDefaults();
 }
 
 void settingsLoad() {
@@ -45,7 +55,11 @@ void settingsLoad() {
         Settings stored;
         memset(&stored, 0, sizeof(stored));
         p.getBytes(KEY, &stored, n);
-        if (stored.magic == MAGIC) memcpy(&cfg, &stored, n);
+        if (stored.magic == MAGIC) {
+            memcpy(&cfg, &stored, n);
+            // an older blob's trailing padding can overlap newer fields: give those their defaults
+            if (stored.ver < 2) soundDefaults();
+        }
     }
     p.end();
 
@@ -72,6 +86,14 @@ void settingsLoad() {
     for (uint8_t* flag : {&cfg.fmt24, &cfg.autoDim, &cfg.leadingZero, &cfg.blinkColon, &cfg.secondsBar, &cfg.showDate,
                           &cfg.autoUpdate, &cfg.ldrOn, &cfg.ldrInvert, &cfg.flipH, &cfg.flipV, &cfg.showSecs})
         *flag = *flag ? 1 : 0;
+    if (cfg.volume > MAX_VOLUME) cfg.volume = DEF_VOLUME;
+    if (cfg.timerSound >= SND_COUNT) cfg.timerSound = SND_DIGITAL;
+    if (cfg.swSound >= SWS_COUNT) cfg.swSound = SWS_BEEP;
+    if (cfg.snoozeMin < 1 || cfg.snoozeMin > 30) cfg.snoozeMin = DEF_SNOOZE_MIN;
+    for (Alarm& a : cfg.alarms) {
+        if (a.used > 1 || a.hour > 23 || a.minute > 59 || a.days > 127 || a.sound >= SND_COUNT) memset(&a, 0, sizeof(a));
+        a.on = a.on ? 1 : 0;
+    }
     for (Event& e : cfg.events) {
         e.text[sizeof(e.text) - 1] = 0;
         if (e.month > 12 || e.day > 31 || e.anim > ANIM_RANDOM) memset(&e, 0, sizeof(e));

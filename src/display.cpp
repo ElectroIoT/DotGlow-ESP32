@@ -270,11 +270,8 @@ void ClockFace::draw(const struct tm& t, uint16_t ms, int dx) {
     }
 }
 
-// Stopwatch: MM:SS (HH:MM after an hour; HH:MM:SS on 6+ modules), tenths of a second
-// filling the bottom row. Paused with time on it: the digits blink.
-void drawStopwatch(uint32_t ms, bool running) {
-    fbClear();
-    const uint32_t s = ms / 1000;
+// MM:SS, or HH:MM from an hour up (HH:MM:SS on 6+ modules), centred. Rows 0..6.
+static void drawDuration(uint32_t s) {
     const uint32_t h = min<uint32_t>(s / 3600, 99), m = s / 60 % 60, sec = s % 60;
     const bool wide = W >= FACE_HMS_W + 2;
     uint8_t d[6];
@@ -291,15 +288,77 @@ void drawStopwatch(uint32_t ms, bool running) {
         memcpy(d, v, 4);
     }
     const int x0 = (W - (wide ? FACE_HMS_W : FACE_HM_W)) / 2;
-    const bool hide = !running && ms > 0 && millis() % 1000 >= 650;
-    if (!hide) {
-        for (int i = 0; i < slots; i++) drawDigit(x0 + DIGIT_X[i], d[i]);
-        for (int k = 0; k < (wide ? 2 : 1); k++)
-            for (int c = 0; c < 2; c++)
-                for (int y : {1, 2, 4, 5}) fbSet(x0 + COLON_X[k] + c, y, true);
-    }
-    int len = (wide || s < 3600) ? (ms % 1000) * W / 1000 : sec * W / 60;
+    for (int i = 0; i < slots; i++) drawDigit(x0 + DIGIT_X[i], d[i]);
+    for (int k = 0; k < (wide ? 2 : 1); k++)
+        for (int c = 0; c < 2; c++)
+            for (int y : {1, 2, 4, 5}) fbSet(x0 + COLON_X[k] + c, y, true);
+}
+
+// Stopwatch: the time, tenths of a second filling the bottom row (seconds after an hour).
+// Paused with time on it: the digits blink.
+void drawStopwatch(uint32_t ms, bool running) {
+    fbClear();
+    const uint32_t s = ms / 1000;
+    const bool wide = W >= FACE_HMS_W + 2;
+    if (running || ms == 0 || millis() % 1000 < 650) drawDuration(s);
+    int len = (wide || s < 3600) ? (ms % 1000) * W / 1000 : (s % 60) * W / 60;
     for (int x = 0; x < len; x++) fbSet(x, 7, true);
+    fbShow();
+}
+
+// Countdown: the time left (rounded up, so it reaches 0 exactly at the end), the bottom
+// row shrinking with it. Paused part-way: the digits blink.
+void drawCountdown(uint32_t ms, uint32_t totalMs, bool running) {
+    fbClear();
+    if (running || ms == totalMs || millis() % 1000 < 650) drawDuration((ms + 999) / 1000);
+    const int len = totalMs ? (int)(((uint64_t)ms * W + totalMs - 1) / totalMs) : 0;
+    for (int x = 0; x < len; x++) fbSet(x, 7, true);
+    fbShow();
+}
+
+// 7x7 bell, bit 6 = left-most pixel
+static const uint8_t BELL_ICON[7] = {0x08, 0x1C, 0x3E, 0x3E, 0x3E, 0x7F, 0x08};
+
+// Three bells swinging across the display.
+static void drawBells(uint32_t age) {
+    const int swing = (age / 90) % 2;
+    const int x[3] = {1, (W - 7) / 2, W - 9};
+    for (int i = 0; i < 3; i++)
+        for (int r = 0; r < 7; r++)
+            for (int c = 0; c < 7; c++)
+                if (BELL_ICON[r] & (0x40 >> c)) fbSet(x[i] + c + (i == 1 ? 1 - swing : swing), r, true);
+}
+
+static void drawStripes(uint32_t age) {   // marching dashes on the bottom row
+    for (int x = 0; x < W; x++) fbSet(x, 7, (x + age / 90) % 4 < 2);
+}
+
+void drawTimerEnd(uint32_t age) {
+    fbClear();
+    if (age % 1600 >= 900) drawBells(age);
+    else if (age % 300 < 200) drawDuration(0);
+    drawStripes(age);
+    fbShow();
+}
+
+void drawAlarm(const struct tm& t, uint32_t age) {
+    fbClear();
+    if (age % 2400 < 1500) {   // the time, so a glance answers "what time is it?"
+        int h = t.tm_hour;
+        if (!cfg.fmt24) {
+            h %= 12;
+            if (h == 0) h = 12;
+        }
+        const int x0 = (W - FACE_HM_W) / 2;
+        const uint8_t d[4] = {(uint8_t)(h / 10), (uint8_t)(h % 10), (uint8_t)(t.tm_min / 10), (uint8_t)(t.tm_min % 10)};
+        for (int i = 0; i < 4; i++)
+            if (i || d[0] || cfg.leadingZero) drawDigit(x0 + DIGIT_X[i], d[i]);
+        for (int c = 0; c < 2; c++)
+            for (int y : {1, 2, 4, 5}) fbSet(x0 + COLON_X[0] + c, y, true);
+    } else {
+        drawBells(age);
+    }
+    drawStripes(age);
     fbShow();
 }
 

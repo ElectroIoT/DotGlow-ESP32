@@ -1,7 +1,10 @@
 #include "api.h"
+#include "alarm.h"
 #include "app.h"
 #include "config.h"
+#include "countdown.h"
 #include "ota.h"
+#include "sound.h"
 #include "stopwatch.h"
 #include "settings.h"
 #include <WiFi.h>
@@ -104,7 +107,27 @@ static ApiResult opStatus(bool trusted) {
                 ",\"mode\":" + jsonStr(appMode == MODE_SETUP ? "setup" : appMode == MODE_SAFE ? "safe" : "clock") +
                 ",\"safe\":" + (appMode == MODE_SAFE ? "true" : "false") +
                 ",\"light\":" + String(lightPercent()) + ",\"brNow\":" + String(brightnessNow()) +
-                ",\"sw\":" + stopwatchJson() + "}");
+                ",\"sw\":" + stopwatchJson() + ",\"tmr\":" + countdownJson() + ",\"alarm\":" + alarmJson() + "}");
+}
+
+// Speaker settings, the alarms and the sound names (the app builds its lists from these).
+static String soundConfigJson() {
+    String j = String(",\"vol\":") + cfg.volume + ",\"tmrSound\":" + cfg.timerSound + ",\"swSound\":" + cfg.swSound +
+               ",\"snooze\":" + cfg.snoozeMin + ",\"maxAlarms\":" + MAX_ALARMS + ",\"sounds\":[";
+    for (int i = 0; i < SND_COUNT; i++) j += String(i ? "," : "") + jsonStr(soundName(i));
+    j += "],\"swSounds\":[";
+    for (int i = 0; i < SWS_COUNT; i++) j += String(i ? "," : "") + jsonStr(swSoundName(i));
+    j += "],\"alarms\":[";
+    bool first = true;
+    for (int i = 0; i < MAX_ALARMS; i++) {
+        const Alarm& a = cfg.alarms[i];
+        if (!a.used) continue;
+        if (!first) j += ',';
+        first = false;
+        j += String("{\"i\":") + i + ",\"h\":" + a.hour + ",\"m\":" + a.minute + ",\"d\":" + a.days +
+             ",\"s\":" + a.sound + ",\"on\":" + a.on + "}";
+    }
+    return j + "]";
 }
 
 static ApiResult opConfig() {
@@ -118,7 +141,7 @@ static ApiResult opConfig() {
                ",\"pinUpload\":" + (strlen(UPDATE_PASS_SHA256) ? "true" : "false") +
                ",\"ldrOn\":" + cfg.ldrOn + ",\"ldrMin\":" + cfg.ldrMin + ",\"ldrMax\":" + cfg.ldrMax +
                ",\"ldrInvert\":" + cfg.ldrInvert + ",\"modules\":" + cfg.modules + ",\"hwType\":" + cfg.hwType +
-               ",\"flipH\":" + cfg.flipH + ",\"flipV\":" + cfg.flipV + ",\"showSecs\":" + cfg.showSecs +
+               ",\"flipH\":" + cfg.flipH + ",\"flipV\":" + cfg.flipV + ",\"showSecs\":" + cfg.showSecs + soundConfigJson() +
                ",\"hasPassword\":" + (apiHasPassword() ? "true" : "false") + ",\"events\":[";
     bool first = true;
     for (int i = 0; i < MAX_EVENTS; i++) {
@@ -155,6 +178,10 @@ static ApiResult opSet(const ApiArgs& a) {
     else if (k == "flipH")       flag(cfg.flipH);
     else if (k == "flipV")       flag(cfg.flipV);
     else if (k == "showSecs")    flag(cfg.showSecs);
+    else if (k == "vol")         cfg.volume = constrain(n, 0, (int)MAX_VOLUME);
+    else if (k == "tmrSound")    cfg.timerSound = constrain(n, 0, SND_COUNT - 1);
+    else if (k == "swSound")     cfg.swSound = constrain(n, 0, SWS_COUNT - 1);
+    else if (k == "snooze")      cfg.snoozeMin = constrain(n, 1, 30);
     else if (k == "modules" || k == "hwType") {   // the display driver is set up at boot: restart to apply
         if (k == "modules") cfg.modules = constrain(n, (int)MIN_MODULES, (int)MAX_MODULES);
         else                cfg.hwType = constrain(n, 0, (int)MT_ICSTATION);
@@ -257,6 +284,66 @@ static ApiResult opEventShow(const ApiArgs& a) {
     return ok();
 }
 
+// alarm/set  i=<slot, missing or -1 = new> h=<0..23> m=<0..59> d=<day bits, 0 = once> s=<sound> on=<0|1>
+static ApiResult opAlarmSet(const ApiArgs& a) {
+    int i = a.has("i") ? a.get("i").toInt() : -1;
+    const int h = a.get("h").toInt(), m = a.get("m").toInt(), d = a.get("d").toInt(), s = a.get("s").toInt();
+    if (!a.has("h") || !a.has("m") || h < 0 || h > 23 || m < 0 || m > 59) return fail(400, "Invalid time");
+    if (d < 0 || d > 127)        return fail(400, "Invalid days");
+    if (s < 0 || s >= SND_COUNT) return fail(400, "Unknown sound");
+    if (i < 0) {
+        for (int k = 0; k < MAX_ALARMS && i < 0; k++)
+            if (!cfg.alarms[k].used) i = k;
+        if (i < 0) return fail(400, "All 6 alarms are used - delete one first");
+    } else if (i >= MAX_ALARMS || !cfg.alarms[i].used) {
+        return fail(400, "Invalid alarm");
+    }
+    alarmChanged(i);
+    const uint8_t on = a.has("on") && !a.get("on").toInt() ? 0 : 1;
+    cfg.alarms[i] = {1, on, (uint8_t)h, (uint8_t)m, (uint8_t)d, (uint8_t)s};
+    settingsSave();
+    return ok();
+}
+
+static ApiResult opAlarmDelete(const ApiArgs& a) {
+    const int i = a.get("i").toInt();
+    if (!a.has("i") || i < 0 || i >= MAX_ALARMS) return fail(400, "Invalid alarm");
+    alarmChanged(i);
+    memset(&cfg.alarms[i], 0, sizeof(Alarm));
+    settingsSave();
+    return ok();
+}
+
+// sound  a=play n=<sound>  |  a=play sw=<stopwatch style>  |  a=stop
+static ApiResult opSound(const ApiArgs& a) {
+    const String act = a.get("a");
+    if (alarmRinging() || countdownRinging()) return fail(400, "The clock is ringing");
+    if (act == "stop") {
+        soundStop();
+        return ok();
+    }
+    if (act != "play") return fail(400, "Unknown action");
+    if (!cfg.volume) return fail(400, "The volume is 0");
+    if (a.has("sw")) {
+        const int s = a.get("sw").toInt();
+        if (s <= SWS_OFF || s >= SWS_COUNT) return fail(400, "Unknown sound");
+        soundDemoCues(s);
+        return ok();
+    }
+    const int n = a.get("n").toInt();
+    if (!a.has("n") || n < 0 || n >= SND_COUNT) return fail(400, "Unknown sound");
+    soundPlay(n, false);
+    return ok();
+}
+
+// timer  a=set s=<seconds>  |  a=start|pause|toggle|reset|open|exit|stop  (s= with start sets it first)
+static ApiResult opTimer(const ApiArgs& a) {
+    const String act = a.get("a");
+    if (a.has("s") && !countdownSet(a.get("s").toInt())) return fail(400, "Use 1 second to 99:59:59");
+    if (act != "set" && !countdownCommand(act)) return fail(400, "Unknown action");
+    return json(countdownJson());
+}
+
 // password  cur=<current> new=<new password, empty = remove the password>
 static ApiResult opPassword(const ApiArgs& a) {
     if (apiHasPassword()) {
@@ -310,10 +397,15 @@ ApiResult apiCall(const String& op, const ApiArgs& a, bool trusted) {
     if (op == "modules")     { moduleTest = true; return ok(); }
     if (op == "anim")        { animRequest = constrain(a.get("n").toInt(), 0, (int)ANIM_RANDOM); return ok(); }
     if (op == "stopwatch")   return stopwatchCommand(a.get("a")) ? json(stopwatchJson()) : fail(400, "Unknown action");
+    if (op == "alarm/set")   return opAlarmSet(a);
+    if (op == "alarm/del")   return opAlarmDelete(a);
+    if (op == "alarm")       return alarmCommand(a.get("a")) ? json(alarmJson()) : fail(400, "Unknown action");
+    if (op == "sound")       return opSound(a);
+    if (op == "timer")       return opTimer(a);
     if (op == "sync")        { startNtp(); return ok(); }
     if (op == "ota/check")   { otaRequest = OTA_CHECK; return ok(); }
     if (op == "ota/install") { otaRequest = OTA_INSTALL; return ok(); }
     if (op == "restart")     { scheduleRestart(800); return ok(); }
-    if (op == "factory")     { settingsDefaults(); settingsSave(); scheduleRestart(800); return ok(); }
+    if (op == "factory")     { alarmStop(); settingsDefaults(); settingsSave(); scheduleRestart(800); return ok(); }
     return fail(404, "Unknown operation");
 }

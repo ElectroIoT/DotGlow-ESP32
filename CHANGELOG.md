@@ -1,6 +1,11 @@
 # Changelog
 
-## Unreleased
+## Unreleased (0.4.0)
+- Speaker support (MAX98357A I2S amplifier; DotGlow V1 board: GPIO 5 / 6 / 7 / 15): 10 synthesised sounds, volume.
+- Alarms: up to 6, weekdays or once, own sound each, snooze, gets louder, `alarm/set`, `alarm/del`, `alarm` ops.
+- Countdown timer with its own end sound, `timer` op; stopwatch start / pause / reset sounds in 4 styles.
+- While ringing, the stopwatch button or BOOT: tap = snooze, hold = stop.
+- Test builds run API ops typed on the USB serial port.
 - Web flasher at https://mtpcode.com/flash/ (ESP Web Tools; ESP32, ESP32-S3, ESP8266). `tools/make_web_flasher.py`
   publishes each release's images + manifests to the website repo.
 - Desktop flasher (`desktop-flasher/`): window + command line for PC. Detects the chip, downloads the latest firmware

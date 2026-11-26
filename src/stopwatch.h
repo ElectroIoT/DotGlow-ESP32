@@ -1,9 +1,9 @@
-// Stopwatch: optional button on PIN_STOPWATCH (to GND), and the "stopwatch" API op.
+// Stopwatch: the optional button, and the "stopwatch" API op.
 #pragma once
 
 #include <Arduino.h>
 
-void     stopwatchBegin();                          // set up the button pin
+void     stopwatchButton(bool hold);                // tap: start / pause, hold: reset, then close
 bool     stopwatchLoop();                           // true while the stopwatch owns the display
 bool     stopwatchCommand(const String& action);    // start, pause, toggle, reset, open, exit
 String   stopwatchJson();                           // {"on","run","ms"}

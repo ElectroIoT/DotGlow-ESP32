@@ -4,7 +4,7 @@
 #ifdef CRASH_TEST
 #define FW_VERSION      "0.0.1"               // safe-mode test build (env:crashtest): always older than any release
 #else
-#define FW_VERSION      "0.3.1"               // bump for every release (tools/release.py reads it from here)
+#define FW_VERSION      "0.4.0"               // bump for every release (tools/release.py reads it from here)
 #endif
 
 #include <MD_MAX72xx.h>
@@ -56,6 +56,29 @@
 #define PIN_LDR         34                    // ADC1 channel 6 (input-only pin)
 #endif
 
+// ---- Optional speaker (MAX98357A I2S amplifier, powered from 5V) ---------------------
+//              ESP32 DevKit    ESP32-S3 / DotGlow board
+//   BCLK  ->   GPIO26          GPIO5
+//   LRC   ->   GPIO25          GPIO6
+//   DIN   ->   GPIO22          GPIO7
+//   SD    ->   GPIO21          GPIO15   (amplifier on / off)
+#if CONFIG_IDF_TARGET_ESP32S3
+#define PIN_I2S_BCLK    5
+#define PIN_I2S_LRC     6
+#define PIN_I2S_DOUT    7
+#define PIN_AMP_SD      15
+#else
+#define PIN_I2S_BCLK    26
+#define PIN_I2S_LRC     25
+#define PIN_I2S_DOUT    22
+#define PIN_AMP_SD      21
+#endif
+
+// ---- Alarms and countdown ------------------------------------------------------------
+#define ALARM_RING_MS   180000                // an unanswered alarm stops by itself after this long
+#define TIMER_RING_MS   60000                 // ... and a finished countdown after this long
+#define TIMER_DEF_S     300                   // countdown length until another is set
+
 // ---- Network -----------------------------------------------------------------
 #define AP_PREFIX       "DotGlow-"            // setup hotspot name, followed by 4 chip-ID hex digits
 #define HOSTNAME        "dotglow"             // http://dotglow.local
@@ -101,3 +124,5 @@
 // ---- Defaults for first boot / factory reset ---------------------------------------
 #define DEF_TZ          "IST-5:30"            // POSIX TZ string, India
 #define DEF_BRIGHTNESS  4                     // 0..15
+#define DEF_VOLUME      6                     // 0..10
+#define DEF_SNOOZE_MIN  5
