@@ -1,5 +1,5 @@
 # Publishes the browser flasher to GitHub Pages: https://electroiot.github.io/DotGlow-ESP32/
-# Run it again (Actions tab) after a firmware release, so the page picks up the new catalog.
+# Run it again (Actions tab) after publishing a firmware release, so the page offers the new version.
 name: Web flasher
 
 on:
@@ -28,7 +28,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Build the site from the firmware catalog
+      - name: Build the site from the latest release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: python web-flasher/build.py _site
       - uses: actions/upload-pages-artifact@v3
         with:
